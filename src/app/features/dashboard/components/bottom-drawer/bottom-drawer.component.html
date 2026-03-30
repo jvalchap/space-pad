@@ -1,0 +1,32 @@
+<div class="bottom-drawer" [class.bottom-drawer--open]="open()">
+  <div
+    class="bottom-drawer__backdrop"
+    role="presentation"
+    tabindex="-1"
+    (click)="onBackdropClick($event)"
+  ></div>
+
+  <div
+    class="bottom-drawer__panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="bottom-drawer-title"
+  >
+    <div class="bottom-drawer__handle" aria-hidden="true"></div>
+    <h2 id="bottom-drawer-title" class="bottom-drawer__title">Insertar bloque</h2>
+    <ul class="bottom-drawer__options" role="list">
+      <li>
+        <button type="button" class="bottom-drawer__option" (click)="pickType('text')">
+          <span class="bottom-drawer__option-label">Text</span>
+          <span class="bottom-drawer__option-hint">Párrafo</span>
+        </button>
+      </li>
+      <li>
+        <button type="button" class="bottom-drawer__option" (click)="pickType('checklist')">
+          <span class="bottom-drawer__option-label">Checklist</span>
+          <span class="bottom-drawer__option-hint">Lista con casillas</span>
+        </button>
+      </li>
+    </ul>
+  </div>
+</div>

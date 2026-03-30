@@ -1,0 +1,27 @@
+<div class="checklist-block" [attr.data-block-id]="block().id">
+  @for (item of block().items; track $index) {
+    <div class="checklist-row">
+      <label class="checklist-row__check">
+        <input
+          type="checkbox"
+          class="checklist-row__checkbox"
+          [checked]="item.checked"
+          (change)="onToggle($index)"
+          [attr.aria-label]="'Ítem ' + ($index + 1) + ', completado'"
+        />
+      </label>
+      <input
+        #itemText
+        type="text"
+        class="checklist-row__text"
+        [attr.data-block-id]="block().id"
+        [attr.data-checklist-item]="$index"
+        (focusin)="onItemFocusIn($index)"
+        (focusout)="onItemFocusOut()"
+        (input)="onItemInput($index, $event)"
+        (keydown)="onItemKeydown($index, $event)"
+        aria-label="Texto del ítem"
+      />
+    </div>
+  }
+</div>

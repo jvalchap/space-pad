@@ -1,0 +1,96 @@
+import { AsyncPipe } from '@angular/common';
+import { Component, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { BottomDrawerComponent } from './components/bottom-drawer/bottom-drawer.component';
+import { BlockListComponent } from './components/block-list/block-list.component';
+import {
+  BlockContentChangePayload,
+  BlocksReorderPayload,
+  ChecklistItemKeydownPayload,
+  ChecklistItemTextPayload,
+  ChecklistTogglePayload,
+  TextLikeFieldKeydownPayload,
+} from './models/block-ui-payloads.model';
+import { EditorFocusRequest, EditorService } from './services/editor.service';
+
+@Component({
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [AsyncPipe, BlockListComponent, BottomDrawerComponent],
+  providers: [EditorService],
+  templateUrl: './dashboard.component.html',
+  styleUrl: './dashboard.component.scss',
+})
+export class DashboardComponent {
+  readonly editor = inject(EditorService);
+
+  readonly blocks$ = this.editor.blocks$;
+
+  readonly reorderMode = signal(false);
+
+  constructor() {
+    this.editor.focusRequest$.pipe(takeUntilDestroyed()).subscribe((request) => {
+      queueMicrotask(() => this.focusEditorTarget(request));
+    });
+  }
+
+  toggleReorderMode(): void {
+    this.reorderMode.update((v) => !v);
+  }
+
+  onBlocksReordered(payload: BlocksReorderPayload): void {
+    this.editor.reorderBlocks(payload.previousIndex, payload.currentIndex);
+  }
+
+  onTextLikeContent(payload: BlockContentChangePayload): void {
+    this.editor.updateBlockContent(payload.blockId, payload.content);
+  }
+
+  onTextLikeFieldKeydown(payload: TextLikeFieldKeydownPayload): void {
+    this.editor.handleBlockKeydown(
+      payload.blockId,
+      payload.keyboardEvent,
+      payload.snapshot,
+    );
+  }
+
+  onChecklistToggle(payload: ChecklistTogglePayload): void {
+    this.editor.toggleChecklistItem(payload.blockId, payload.itemIndex);
+  }
+
+  onChecklistItemText(payload: ChecklistItemTextPayload): void {
+    this.editor.updateChecklistItemText(
+      payload.blockId,
+      payload.itemIndex,
+      payload.text,
+    );
+  }
+
+  onChecklistItemKeydown(payload: ChecklistItemKeydownPayload): void {
+    this.editor.handleChecklistItemKeydown(
+      payload.blockId,
+      payload.itemIndex,
+      payload.keyboardEvent,
+      payload.snapshot,
+    );
+  }
+
+  private focusEditorTarget(request: EditorFocusRequest): void {
+    if (typeof document === 'undefined') {
+      return;
+    }
+    const selector =
+      request.checklistItemIndex !== undefined
+        ? `[data-block-id="${CSS.escape(request.blockId)}"][data-checklist-item="${request.checklistItemIndex}"]`
+        : `textarea[data-block-id="${CSS.escape(request.blockId)}"]`;
+    const el = document.querySelector<HTMLInputElement | HTMLTextAreaElement>(
+      selector,
+    );
+    if (!el) {
+      return;
+    }
+    el.focus();
+    const length = el.value.length;
+    el.setSelectionRange(length, length);
+  }
+}

@@ -1,0 +1,77 @@
+.dashboard-shell {
+  --dashboard-fg: #37352f;
+  --dashboard-muted: #787774;
+  --dashboard-bg: #f7f6f3;
+  --dashboard-surface: #ffffff;
+  --dashboard-accent: #2eaadc;
+
+  min-height: 100dvh;
+  padding: 3.25rem 1.5rem 5.5rem;
+  box-sizing: border-box;
+  background: var(--dashboard-bg);
+  color: var(--dashboard-fg);
+}
+
+.dashboard-doc {
+  max-width: min(700px, 92vw);
+  margin: 0 auto;
+}
+
+.dashboard-floating-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 1.25rem;
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--dashboard-surface) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--dashboard-fg) 8%, transparent);
+  box-shadow: 0 4px 24px rgb(15 15 15 / 10%);
+  max-width: calc(100vw - 2rem);
+}
+
+.dashboard-add-btn,
+.dashboard-reorder-btn {
+  appearance: none;
+  border: none;
+  border-radius: 999px;
+  padding: 0.45rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--dashboard-fg);
+  transition: background 120ms ease, box-shadow 120ms ease;
+}
+
+.dashboard-add-btn {
+  background: color-mix(in srgb, var(--dashboard-accent) 12%, var(--dashboard-surface));
+}
+
+.dashboard-add-btn:hover {
+  background: color-mix(in srgb, var(--dashboard-accent) 20%, var(--dashboard-surface));
+}
+
+.dashboard-reorder-btn {
+  background: color-mix(in srgb, var(--dashboard-fg) 8%, var(--dashboard-surface));
+}
+
+.dashboard-reorder-btn:hover {
+  background: color-mix(in srgb, var(--dashboard-fg) 12%, var(--dashboard-surface));
+}
+
+.dashboard-reorder-btn--active {
+  background: color-mix(in srgb, var(--dashboard-accent) 22%, var(--dashboard-surface));
+  font-weight: 600;
+}
+
+.dashboard-add-btn:focus-visible,
+.dashboard-reorder-btn:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--dashboard-accent) 45%, transparent);
+  outline-offset: 2px;
+}

@@ -1,0 +1,62 @@
+<div
+  class="block-list"
+  cdkDropList
+  cdkDropListOrientation="vertical"
+  [cdkDropListData]="blocks()"
+  [cdkDropListDisabled]="!reorderMode()"
+  (cdkDropListDropped)="onDrop($event)"
+>
+  @for (block of blocks(); track block.id) {
+    <div class="block-list__row" cdkDrag [cdkDragDisabled]="!reorderMode()">
+      <div class="block-list__row-inner">
+        @if (reorderMode()) {
+          <div class="block-list__handle-col">
+            <button
+              type="button"
+              class="block-list__handle"
+              cdkDragHandle
+              aria-label="Arrastrar para reordenar"
+            >
+              <svg
+                class="block-list__handle-icon"
+                width="14"
+                height="18"
+                viewBox="0 0 14 18"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <circle cx="4" cy="3.5" r="1.4" fill="currentColor" />
+                <circle cx="10" cy="3.5" r="1.4" fill="currentColor" />
+                <circle cx="4" cy="9" r="1.4" fill="currentColor" />
+                <circle cx="10" cy="9" r="1.4" fill="currentColor" />
+                <circle cx="4" cy="14.5" r="1.4" fill="currentColor" />
+                <circle cx="10" cy="14.5" r="1.4" fill="currentColor" />
+              </svg>
+            </button>
+          </div>
+        }
+        <div class="block-list__slot-wrapper">
+          <div class="block-list__slot">
+            @switch (block.type) {
+              @case ('text') {
+                <app-text-block
+                  [block]="asTextBlock(block)"
+                  (contentChange)="contentChange.emit($event)"
+                  (fieldKeydown)="fieldKeydown.emit($event)"
+                />
+              }
+              @case ('checklist') {
+                <app-checklist-block
+                  [block]="asChecklistBlock(block)"
+                  (toggleItem)="toggleItem.emit($event)"
+                  (itemTextChange)="itemTextChange.emit($event)"
+                  (itemKeydown)="itemKeydown.emit($event)"
+                />
+              }
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
