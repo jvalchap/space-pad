@@ -2,10 +2,13 @@ import {
   Component,
   booleanAttribute,
   effect,
+  inject,
   input,
   output,
 } from '@angular/core';
 import { BlockType } from '../../models/block.model';
+import { PanelTemplateId } from '../../models/template.model';
+import { TemplateService } from '../../services/template.service';
 
 @Component({
   selector: 'app-bottom-drawer',
@@ -16,11 +19,19 @@ import { BlockType } from '../../models/block.model';
 export class BottomDrawerComponent {
   readonly BlockType = BlockType;
 
+  private readonly templateService = inject(TemplateService);
+
+  readonly blockTemplates = this.templateService
+    .listTemplates()
+    .filter((template) => template.id !== PanelTemplateId.Empty);
+
   readonly open = input(false, { transform: booleanAttribute });
 
   readonly closeDrawer = output<void>();
 
   readonly blockTypePicked = output<BlockType>();
+
+  readonly templatePicked = output<PanelTemplateId>();
 
   constructor() {
     effect((onCleanup) => {
@@ -57,6 +68,10 @@ export class BottomDrawerComponent {
 
   pickType(type: BlockType): void {
     this.blockTypePicked.emit(type);
+  }
+
+  pickTemplate(templateId: PanelTemplateId): void {
+    this.templatePicked.emit(templateId);
   }
 
   onBackdropClick(event: MouseEvent): void {

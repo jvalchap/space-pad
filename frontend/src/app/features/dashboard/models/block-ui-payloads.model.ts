@@ -1,3 +1,4 @@
+import { ChecklistItemPriority } from './block.model';
 import { BlockFieldSnapshot } from '../services/editor.service';
 
 export interface BlockContentChangePayload {
@@ -20,6 +21,12 @@ export interface ChecklistItemTextPayload {
   readonly blockId: string;
   readonly itemIndex: number;
   readonly text: string;
+}
+
+export interface ChecklistItemPriorityPayload {
+  readonly blockId: string;
+  readonly itemIndex: number;
+  readonly priority: ChecklistItemPriority | null;
 }
 
 export interface ChecklistItemKeydownPayload {

@@ -20,6 +20,7 @@ import {
   BlockContentChangePayload,
   BlocksReorderPayload,
   ChecklistItemKeydownPayload,
+  ChecklistItemPriorityPayload,
   ChecklistItemTextPayload,
   ChecklistTogglePayload,
   TextLikeFieldKeydownPayload,
@@ -110,6 +111,14 @@ export class DashboardComponent {
       payload.itemIndex,
       payload.keyboardEvent,
       payload.snapshot,
+    );
+  }
+
+  onChecklistItemPriority(payload: ChecklistItemPriorityPayload): void {
+    this.editor.updateChecklistItemPriority(
+      payload.blockId,
+      payload.itemIndex,
+      payload.priority ?? undefined,
     );
   }
 

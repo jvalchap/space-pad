@@ -6,9 +6,14 @@ import {
   output,
   viewChildren,
 } from '@angular/core';
-import { ChecklistBlock } from '../../models/block.model';
+import {
+  ChecklistBlock,
+  ChecklistItemPriority,
+  isChecklistItemPriority,
+} from '../../models/block.model';
 import {
   ChecklistItemKeydownPayload,
+  ChecklistItemPriorityPayload,
   ChecklistItemTextPayload,
   ChecklistTogglePayload,
 } from '../../models/block-ui-payloads.model';
@@ -27,6 +32,10 @@ export class ChecklistBlockComponent {
   readonly itemTextChange = output<ChecklistItemTextPayload>();
 
   readonly itemKeydown = output<ChecklistItemKeydownPayload>();
+
+  readonly itemPriorityChange = output<ChecklistItemPriorityPayload>();
+
+  readonly Priority = ChecklistItemPriority;
 
   private readonly itemTextRefs =
     viewChildren<ElementRef<HTMLInputElement>>('itemText');
@@ -97,5 +106,25 @@ export class ChecklistBlockComponent {
         selectionEnd: el.selectionEnd ?? 0,
       },
     });
+  }
+
+  onPriorityChange(itemIndex: number, event: Event): void {
+    const el = event.target as HTMLSelectElement;
+    const value = el.value;
+    if (value === '') {
+      this.itemPriorityChange.emit({
+        blockId: this.block().id,
+        itemIndex,
+        priority: null,
+      });
+      return;
+    }
+    if (isChecklistItemPriority(value)) {
+      this.itemPriorityChange.emit({
+        blockId: this.block().id,
+        itemIndex,
+        priority: value,
+      });
+    }
   }
 }

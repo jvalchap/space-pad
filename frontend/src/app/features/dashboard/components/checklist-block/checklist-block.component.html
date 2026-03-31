@@ -1,4 +1,7 @@
 <div class="checklist-block" [attr.data-block-id]="block().id">
+  @if (block().title) {
+    <div class="checklist-block__title">{{ block().title }}</div>
+  }
   @for (item of block().items; track $index) {
     <div class="checklist-row">
       <label class="checklist-row__check">
@@ -10,18 +13,31 @@
           [attr.aria-label]="'Item ' + ($index + 1) + ', completed'"
         />
       </label>
-      <input
-        #itemText
-        type="text"
-        class="checklist-row__text"
-        [attr.data-block-id]="block().id"
-        [attr.data-checklist-item]="$index"
-        (focusin)="onItemFocusIn($index)"
-        (focusout)="onItemFocusOut()"
-        (input)="onItemInput($index, $event)"
-        (keydown)="onItemKeydown($index, $event)"
-        aria-label="Item text"
-      />
+      <div class="checklist-row__main">
+        <input
+          #itemText
+          type="text"
+          class="checklist-row__text"
+          [attr.data-block-id]="block().id"
+          [attr.data-checklist-item]="$index"
+          (focusin)="onItemFocusIn($index)"
+          (focusout)="onItemFocusOut()"
+          (input)="onItemInput($index, $event)"
+          (keydown)="onItemKeydown($index, $event)"
+          aria-label="Item text"
+        />
+        <select
+          class="checklist-row__priority"
+          [attr.aria-label]="'Priority for item ' + ($index + 1)"
+          [value]="item.priority ?? ''"
+          (change)="onPriorityChange($index, $event)"
+        >
+          <option value="">—</option>
+          <option [value]="Priority.Low">Low</option>
+          <option [value]="Priority.Medium">Med</option>
+          <option [value]="Priority.High">High</option>
+        </select>
+      </div>
     </div>
   }
 </div>

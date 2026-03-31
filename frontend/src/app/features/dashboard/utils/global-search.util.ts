@@ -34,22 +34,30 @@ function collectBlockHits(
   hits: GlobalSearchHit[],
 ): void {
   if (block.type === BlockType.Text) {
-    if (block.content.toLowerCase().includes(qLower)) {
+    const blob = `${block.title ?? ''}\n${block.content}`.toLowerCase();
+    if (blob.includes(qLower)) {
+      const snippetSource = block.content.trim()
+        ? block.content
+        : (block.title ?? '');
       hits.push({
         panelId,
         panelTitle,
-        snippet: buildSnippet(block.content, query),
+        snippet: buildSnippet(snippetSource, query),
         source: GlobalSearchHitSource.BlockContent,
         blockId: block.id,
       });
     }
     return;
   }
-  if (block.content.toLowerCase().includes(qLower)) {
+  const headBlob = `${block.title ?? ''}\n${block.content}`.toLowerCase();
+  if (headBlob.includes(qLower)) {
+    const snippetSource = block.content.trim()
+      ? block.content
+      : (block.title ?? '');
     hits.push({
       panelId,
       panelTitle,
-      snippet: buildSnippet(block.content, query),
+      snippet: buildSnippet(snippetSource, query),
       source: GlobalSearchHitSource.BlockContent,
       blockId: block.id,
     });

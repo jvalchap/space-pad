@@ -1,12 +1,17 @@
-<textarea
-  #field
-  class="text-block__field"
-  rows="1"
-  [attr.data-block-id]="block().id"
-  (input)="onInput()"
-  (keydown)="onKeydown($event)"
-  (focusin)="onFocusIn()"
-  (focusout)="onFocusOut()"
-  aria-label="Bloque de texto"
-  spellcheck="true"
-></textarea>
+<div class="text-block">
+  @if (block().title) {
+    <div class="text-block__title">{{ block().title }}</div>
+  }
+  <textarea
+    #field
+    class="text-block__field"
+    rows="1"
+    [attr.data-block-id]="block().id"
+    (input)="onInput()"
+    (keydown)="onKeydown($event)"
+    (focusin)="onFocusIn()"
+    (focusout)="onFocusOut()"
+    aria-label="Bloque de texto"
+    spellcheck="true"
+  ></textarea>
+</div>

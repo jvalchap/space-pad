@@ -28,5 +28,18 @@
         </button>
       </li>
     </ul>
+
+      @for (template of blockTemplates; track template.id) {
+        <li>
+          <button
+            type="button"
+            class="bottom-drawer__option"
+            (click)="pickTemplate(template.id)"
+          >
+            <span class="bottom-drawer__option-label">{{ template.name }}</span>
+            <span class="bottom-drawer__option-hint">{{ template.description }}</span>
+          </button>
+        </li>
+      }
   </div>
 </div>

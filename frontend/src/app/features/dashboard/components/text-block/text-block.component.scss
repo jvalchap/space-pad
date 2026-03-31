@@ -2,6 +2,15 @@
   display: block;
 }
 
+.text-block__title {
+  font-size: 0.8125rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: color-mix(in srgb, var(--dashboard-fg) 88%, transparent);
+  margin: 0 0 0.35rem;
+  padding: 0 0.15rem;
+}
+
 .text-block__field {
   display: block;
   width: 100%;

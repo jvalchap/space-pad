@@ -12,6 +12,7 @@ import {
   BlockContentChangePayload,
   BlocksReorderPayload,
   ChecklistItemKeydownPayload,
+  ChecklistItemPriorityPayload,
   ChecklistItemTextPayload,
   ChecklistTogglePayload,
   TextLikeFieldKeydownPayload,
@@ -44,6 +45,8 @@ export class BlockListComponent {
   readonly itemTextChange = output<ChecklistItemTextPayload>();
 
   readonly itemKeydown = output<ChecklistItemKeydownPayload>();
+
+  readonly itemPriorityChange = output<ChecklistItemPriorityPayload>();
 
   asTextBlock(block: Block): TextBlock {
     if (block.type !== BlockType.Text) {
@@ -78,14 +81,16 @@ export class BlockListComponent {
       return false;
     }
     if (block.type === BlockType.Text) {
-      return block.content.toLowerCase().includes(needle);
+      const blob = `${block.title ?? ''}\n${block.content}`.toLowerCase();
+      return blob.includes(needle);
     }
-    if (
-      block.content.toLowerCase().includes(needle) ||
-      block.items.some((item) => item.text.toLowerCase().includes(needle))
-    ) {
-      return true;
-    }
-    return false;
+    const blob = [
+      block.title ?? '',
+      block.content,
+      ...block.items.map((i) => i.text),
+    ]
+      .join('\n')
+      .toLowerCase();
+    return blob.includes(needle);
   }
 }

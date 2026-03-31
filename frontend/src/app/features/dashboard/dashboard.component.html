@@ -36,6 +36,7 @@
           (toggleItem)="onChecklistToggle($event)"
           (itemTextChange)="onChecklistItemText($event)"
           (itemKeydown)="onChecklistItemKeydown($event)"
+          (itemPriorityChange)="onChecklistItemPriority($event)"
         />
       }
     </main>
@@ -52,4 +53,5 @@
   [open]="(editor.blockTypeDrawerOpen$ | async) ?? false"
   (closeDrawer)="editor.closeBlockTypeDrawer()"
   (blockTypePicked)="editor.insertBlockTypeFromPicker($event)"
+  (templatePicked)="editor.appendBlocksFromTemplate($event)"
 />

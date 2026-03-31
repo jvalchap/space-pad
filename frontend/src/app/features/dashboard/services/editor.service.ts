@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable, Subject } from 'rxjs';
 import {
   Block,
@@ -6,32 +6,19 @@ import {
   ChecklistBlock,
   ChecklistItem,
   isBlockType,
+  isChecklistItemPriority,
   TextBlock,
 } from '../models/block.model';
+import { PanelTemplateId } from '../models/template.model';
 import { EditorWorkspaceState } from '../models/editor-page.model';
 import { Panel } from '../models/panel.model';
-
-function createBlockId(): string {
-  return crypto.randomUUID();
-}
-
-function createTextBlock(content: string): TextBlock {
-  return {
-    id: createBlockId(),
-    type: BlockType.Text,
-    content,
-  };
-}
-
-function createChecklistBlock(): ChecklistBlock {
-  const emptyItem: ChecklistItem = { text: '', checked: false };
-  return {
-    id: createBlockId(),
-    type: BlockType.Checklist,
-    content: '',
-    items: [emptyItem],
-  };
-}
+import {
+  createChecklistBlock,
+  createChecklistItem,
+  createDefaultEmptyBlocks,
+  createTextBlock,
+} from './block-factory';
+import { TemplateService } from './template.service';
 
 function createEditorPage(
   title: string,
@@ -47,8 +34,9 @@ function createEditorPage(
 }
 
 function createInitialWorkspaceState(): EditorWorkspaceState {
-  const page1 = createEditorPage('Dashboard 1', [createTextBlock('')]);
-  const page2 = createEditorPage('Dashboard 2', [createTextBlock('')]);
+  const empty = [...createDefaultEmptyBlocks()];
+  const page1 = createEditorPage('Dashboard 1', empty);
+  const page2 = createEditorPage('Dashboard 2', [...createDefaultEmptyBlocks()]);
   return {
     pages: [page1, page2],
     activePageId: page1.id,
@@ -68,6 +56,8 @@ export interface EditorFocusRequest {
 
 @Injectable()
 export class EditorService {
+  private readonly templateService = inject(TemplateService);
+
   private readonly workspaceSubject = new BehaviorSubject<EditorWorkspaceState>(
     createInitialWorkspaceState(),
   );
@@ -97,7 +87,7 @@ export class EditorService {
       .map((raw) => this.normalizeBlockFromApi(raw))
       .filter((b): b is Block => b !== null);
     const forFirstPage =
-      normalized.length > 0 ? normalized : [createTextBlock('')];
+      normalized.length > 0 ? normalized : [...createDefaultEmptyBlocks()];
     const s = this.getState();
     if (s.pages.length === 0) {
       return;
@@ -119,12 +109,12 @@ export class EditorService {
     this.workspaceSubject.next({ ...s, activePageId: pageId });
   }
 
-  addPage(): void {
+  addPage(templateId: PanelTemplateId = PanelTemplateId.Empty): void {
     const s = this.getState();
     const nextNum = s.pages.length + 1;
-    const newPage = createEditorPage(`Dashboard ${nextNum}`, [
-      createTextBlock(''),
-    ]);
+    const blocks = this.templateService.createBlocksForTemplate(templateId);
+    const title = this.templateService.resolvePanelTitle(templateId, nextNum);
+    const newPage = createEditorPage(title, blocks);
     this.workspaceSubject.next({
       pages: [...s.pages, newPage],
       activePageId: newPage.id,
@@ -190,6 +180,18 @@ export class EditorService {
     this.insertBlockAtEndOfType(type);
   }
 
+  appendBlocksFromTemplate(templateId: PanelTemplateId): void {
+    this.closeBlockTypeDrawer();
+    const extra = this.templateService.createBlocksForTemplate(templateId);
+    if (extra.length === 0) {
+      return;
+    }
+    const blocks = this.getActiveBlocks();
+    this.setActivePageBlocks([...blocks, ...extra]);
+    const last = extra[extra.length - 1];
+    this.requestFocusAfterInsert(last);
+  }
+
   private insertBlockAtEndOfType(type: BlockType): void {
     const created = this.createBlockOfType(type);
     const blocks = this.getActiveBlocks();
@@ -201,7 +203,7 @@ export class EditorService {
     if (type === BlockType.Text) {
       return createTextBlock('');
     }
-    return createChecklistBlock();
+    return createChecklistBlock([createChecklistItem('', false)]);
   }
 
   private requestFocusAfterInsert(block: Block): void {
@@ -285,6 +287,29 @@ export class EditorService {
     });
   }
 
+  updateChecklistItemPriority(
+    blockId: string,
+    itemIndex: number,
+    priority: ChecklistItem['priority'],
+  ): void {
+    this.patchChecklistBlock(blockId, (checklist) => {
+      const previous = checklist.items[itemIndex];
+      if (!previous) {
+        return checklist;
+      }
+      const items = checklist.items.map((item, i) => {
+        if (i !== itemIndex) {
+          return item;
+        }
+        if (priority === undefined) {
+          return { text: item.text, checked: item.checked };
+        }
+        return { ...item, priority };
+      });
+      return { ...checklist, items };
+    });
+  }
+
   handleChecklistItemKeydown(
     blockId: string,
     itemIndex: number,
@@ -314,7 +339,7 @@ export class EditorService {
     textForNewItem: string,
   ): void {
     this.patchChecklistBlock(blockId, (checklist) => {
-      const inserted: ChecklistItem = { text: textForNewItem, checked: false };
+      const inserted = createChecklistItem(textForNewItem, false);
       const items = [
         ...checklist.items.slice(0, afterIndex + 1),
         inserted,
@@ -469,29 +494,42 @@ export class EditorService {
       return null;
     }
     if (type === BlockType.Text) {
-      return {
+      const titleRaw = o['title'];
+      const title =
+        typeof titleRaw === 'string' && titleRaw.length > 0 ? titleRaw : undefined;
+      const textBlock: TextBlock = {
         id,
         type: BlockType.Text,
         content: typeof o['content'] === 'string' ? o['content'] : '',
       };
+      return title !== undefined ? { ...textBlock, title } : textBlock;
     }
     const itemsRaw = o['items'];
     const items: ChecklistItem[] = Array.isArray(itemsRaw)
       ? itemsRaw.map((item) => {
           const row = item as Record<string, unknown>;
-          return {
+          const pr = row['priority'];
+          const base: ChecklistItem = {
             text: typeof row['text'] === 'string' ? row['text'] : '',
             checked: Boolean(row['checked']),
           };
+          if (isChecklistItemPriority(pr)) {
+            return { ...base, priority: pr };
+          }
+          return base;
         })
       : [];
     const checklistItems =
-      items.length > 0 ? items : [{ text: '', checked: false }];
-    return {
+      items.length > 0 ? items : [createChecklistItem('', false)];
+    const titleRaw = o['title'];
+    const blockTitle =
+      typeof titleRaw === 'string' && titleRaw.length > 0 ? titleRaw : undefined;
+    const checklist: ChecklistBlock = {
       id,
       type: BlockType.Checklist,
       content: typeof o['content'] === 'string' ? o['content'] : '',
       items: checklistItems,
     };
+    return blockTitle !== undefined ? { ...checklist, title: blockTitle } : checklist;
   }
 }
