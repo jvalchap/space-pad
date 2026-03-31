@@ -5,6 +5,7 @@ import {
   BlockType,
   ChecklistBlock,
   ChecklistItem,
+  isBlockType,
   TextBlock,
 } from '../models/block.model';
 
@@ -15,7 +16,7 @@ function createBlockId(): string {
 function createTextBlock(content: string): TextBlock {
   return {
     id: createBlockId(),
-    type: 'text',
+    type: BlockType.Text,
     content,
   };
 }
@@ -24,7 +25,7 @@ function createChecklistBlock(): ChecklistBlock {
   const emptyItem: ChecklistItem = { text: '', checked: false };
   return {
     id: createBlockId(),
-    type: 'checklist',
+    type: BlockType.Checklist,
     content: '',
     items: [emptyItem],
   };
@@ -43,7 +44,7 @@ export interface EditorFocusRequest {
 
 @Injectable()
 export class EditorService {
-  private readonly blocksSubject = new BehaviorSubject<Block[]>([createTextBlock('')]);
+  private readonly blocksSubject = new BehaviorSubject<Block[]>([]);
   readonly blocks$ = this.blocksSubject.asObservable();
 
   private readonly focusRequestSubject = new Subject<EditorFocusRequest>();
@@ -51,6 +52,15 @@ export class EditorService {
 
   private readonly blockTypeDrawerOpenSubject = new BehaviorSubject(false);
   readonly blockTypeDrawerOpen$ = this.blockTypeDrawerOpenSubject.asObservable();
+
+  loadBlocksFromApi(blocks: readonly unknown[]): void {
+    const normalized = blocks
+      .map((raw) => this.normalizeBlockFromApi(raw))
+      .filter((b): b is Block => b !== null);
+    this.blocksSubject.next(
+      normalized.length > 0 ? normalized : [createTextBlock('')],
+    );
+  }
 
   openBlockTypeDrawer(): void {
     this.blockTypeDrawerOpenSubject.next(true);
@@ -72,14 +82,14 @@ export class EditorService {
   }
 
   private createBlockOfType(type: BlockType): Block {
-    if (type === 'text') {
+    if (type === BlockType.Text) {
       return createTextBlock('');
     }
     return createChecklistBlock();
   }
 
   private requestFocusAfterInsert(block: Block): void {
-    if (block.type === 'checklist') {
+    if (block.type === BlockType.Checklist) {
       this.requestFocus(block.id, 0);
       return;
     }
@@ -112,7 +122,7 @@ export class EditorService {
       return;
     }
     const previous = blocks[index];
-    if (previous.type !== 'text') {
+    if (previous.type !== BlockType.Text) {
       return;
     }
     if (previous.content === content) {
@@ -126,7 +136,7 @@ export class EditorService {
   handleBlockKeydown(blockId: string, event: KeyboardEvent, snapshot: BlockFieldSnapshot): void {
     const blocks = this.blocksSubject.value;
     const block = blocks.find((b) => b.id === blockId);
-    if (!block || block.type === 'checklist') {
+    if (!block || block.type === BlockType.Checklist) {
       return;
     }
     if (this.isSplitLineKey(event)) {
@@ -210,7 +220,7 @@ export class EditorService {
     }
     const blocks = this.blocksSubject.value;
     const block = blocks.find((b) => b.id === blockId);
-    if (!block || block.type !== 'checklist') {
+    if (!block || block.type !== BlockType.Checklist) {
       return;
     }
     if (block.items.length > 1) {
@@ -244,7 +254,7 @@ export class EditorService {
       return;
     }
     const current = blocks[index];
-    if (current.type !== 'checklist') {
+    if (current.type !== BlockType.Checklist) {
       return;
     }
     const next = [...blocks];
@@ -302,7 +312,7 @@ export class EditorService {
     this.blocksSubject.next(next);
     const focusIndex = index > 0 ? index - 1 : 0;
     const focusBlock = next[focusIndex];
-    if (focusBlock.type === 'checklist') {
+    if (focusBlock.type === BlockType.Checklist) {
       const itemIdx = Math.max(0, focusBlock.items.length - 1);
       this.requestFocus(focusBlock.id, itemIdx);
       return;
@@ -312,5 +322,42 @@ export class EditorService {
 
   private requestFocus(blockId: string, checklistItemIndex?: number): void {
     this.focusRequestSubject.next({ blockId, checklistItemIndex });
+  }
+
+  private normalizeBlockFromApi(raw: unknown): Block | null {
+    if (raw === null || typeof raw !== 'object') {
+      return null;
+    }
+    const o = raw as Record<string, unknown>;
+    const id = typeof o['id'] === 'string' ? o['id'] : '';
+    const type = o['type'];
+    if (id === '' || !isBlockType(type)) {
+      return null;
+    }
+    if (type === BlockType.Text) {
+      return {
+        id,
+        type: BlockType.Text,
+        content: typeof o['content'] === 'string' ? o['content'] : '',
+      };
+    }
+    const itemsRaw = o['items'];
+    const items: ChecklistItem[] = Array.isArray(itemsRaw)
+      ? itemsRaw.map((item) => {
+          const row = item as Record<string, unknown>;
+          return {
+            text: typeof row['text'] === 'string' ? row['text'] : '',
+            checked: Boolean(row['checked']),
+          };
+        })
+      : [];
+    const checklistItems =
+      items.length > 0 ? items : [{ text: '', checked: false }];
+    return {
+      id,
+      type: BlockType.Checklist,
+      content: typeof o['content'] === 'string' ? o['content'] : '',
+      items: checklistItems,
+    };
   }
 }

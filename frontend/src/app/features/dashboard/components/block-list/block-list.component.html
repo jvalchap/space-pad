@@ -15,7 +15,7 @@
               type="button"
               class="block-list__handle"
               cdkDragHandle
-              aria-label="Arrastrar para reordenar"
+              aria-label="Drag to reorder"
             >
               <svg
                 class="block-list__handle-icon"
@@ -38,14 +38,14 @@
         <div class="block-list__slot-wrapper">
           <div class="block-list__slot">
             @switch (block.type) {
-              @case ('text') {
+              @case (BlockType.Text) {
                 <app-text-block
                   [block]="asTextBlock(block)"
                   (contentChange)="contentChange.emit($event)"
                   (fieldKeydown)="fieldKeydown.emit($event)"
                 />
               }
-              @case ('checklist') {
+              @case (BlockType.Checklist) {
                 <app-checklist-block
                   [block]="asChecklistBlock(block)"
                   (toggleItem)="toggleItem.emit($event)"

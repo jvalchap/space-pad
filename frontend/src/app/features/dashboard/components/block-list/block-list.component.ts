@@ -4,6 +4,7 @@ import { ChecklistBlockComponent } from '../checklist-block/checklist-block.comp
 import { TextBlockComponent } from '../text-block/text-block.component';
 import {
   Block,
+  BlockType,
   ChecklistBlock,
   TextBlock,
 } from '../../models/block.model';
@@ -24,6 +25,8 @@ import {
   styleUrl: './block-list.component.scss',
 })
 export class BlockListComponent {
+  readonly BlockType = BlockType;
+
   readonly blocks = input.required<Block[]>();
 
   readonly reorderMode = input(false, { transform: booleanAttribute });
@@ -41,14 +44,14 @@ export class BlockListComponent {
   readonly itemKeydown = output<ChecklistItemKeydownPayload>();
 
   asTextBlock(block: Block): TextBlock {
-    if (block.type !== 'text') {
+    if (block.type !== BlockType.Text) {
       throw new Error('Expected text block');
     }
     return block;
   }
 
   asChecklistBlock(block: Block): ChecklistBlock {
-    if (block.type !== 'checklist') {
+    if (block.type !== BlockType.Checklist) {
       throw new Error('Expected checklist block');
     }
     return block;

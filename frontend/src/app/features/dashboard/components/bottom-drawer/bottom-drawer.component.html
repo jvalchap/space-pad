@@ -13,18 +13,18 @@
     aria-labelledby="bottom-drawer-title"
   >
     <div class="bottom-drawer__handle" aria-hidden="true"></div>
-    <h2 id="bottom-drawer-title" class="bottom-drawer__title">Insertar bloque</h2>
+    <h2 id="bottom-drawer-title" class="bottom-drawer__title">Insert block</h2>
     <ul class="bottom-drawer__options" role="list">
       <li>
-        <button type="button" class="bottom-drawer__option" (click)="pickType('text')">
+        <button type="button" class="bottom-drawer__option" (click)="pickType(BlockType.Text)">
           <span class="bottom-drawer__option-label">Text</span>
-          <span class="bottom-drawer__option-hint">Párrafo</span>
+          <span class="bottom-drawer__option-hint">Paragraph</span>
         </button>
       </li>
       <li>
-        <button type="button" class="bottom-drawer__option" (click)="pickType('checklist')">
+        <button type="button" class="bottom-drawer__option" (click)="pickType(BlockType.Checklist)">
           <span class="bottom-drawer__option-label">Checklist</span>
-          <span class="bottom-drawer__option-hint">Lista con casillas</span>
+          <span class="bottom-drawer__option-hint">Task list with checkboxes</span>
         </button>
       </li>
     </ul>

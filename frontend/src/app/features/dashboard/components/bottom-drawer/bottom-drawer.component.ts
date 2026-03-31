@@ -14,6 +14,8 @@ import { BlockType } from '../../models/block.model';
   styleUrl: './bottom-drawer.component.scss',
 })
 export class BottomDrawerComponent {
+  readonly BlockType = BlockType;
+
   readonly open = input(false, { transform: booleanAttribute });
 
   readonly closeDrawer = output<void>();
