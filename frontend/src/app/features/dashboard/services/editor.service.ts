@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, map, Observable, Subject } from 'rxjs';
 import {
   Block,
   BlockType,
@@ -8,6 +8,7 @@ import {
   isBlockType,
   TextBlock,
 } from '../models/block.model';
+import { EditorPage, EditorWorkspaceState } from '../models/editor-page.model';
 
 function createBlockId(): string {
   return crypto.randomUUID();
@@ -31,6 +32,23 @@ function createChecklistBlock(): ChecklistBlock {
   };
 }
 
+function createEditorPage(title: string, blocks: Block[]): EditorPage {
+  return {
+    id: crypto.randomUUID(),
+    title,
+    blocks,
+  };
+}
+
+function createInitialWorkspaceState(): EditorWorkspaceState {
+  const page1 = createEditorPage('Dashboard 1', [createTextBlock('')]);
+  const page2 = createEditorPage('Dashboard 2', [createTextBlock('')]);
+  return {
+    pages: [page1, page2],
+    activePageId: page1.id,
+  };
+}
+
 export interface BlockFieldSnapshot {
   readonly value: string;
   readonly selectionStart: number;
@@ -44,8 +62,19 @@ export interface EditorFocusRequest {
 
 @Injectable()
 export class EditorService {
-  private readonly blocksSubject = new BehaviorSubject<Block[]>([]);
-  readonly blocks$ = this.blocksSubject.asObservable();
+  private readonly workspaceSubject = new BehaviorSubject<EditorWorkspaceState>(
+    createInitialWorkspaceState(),
+  );
+
+  readonly workspace$: Observable<EditorWorkspaceState> =
+    this.workspaceSubject.asObservable();
+
+  readonly blocks$: Observable<Block[]> = this.workspaceSubject.pipe(
+    map((s) => {
+      const page = s.pages.find((p) => p.id === s.activePageId);
+      return page ? page.blocks : [];
+    }),
+  );
 
   private readonly focusRequestSubject = new Subject<EditorFocusRequest>();
   readonly focusRequest$ = this.focusRequestSubject.asObservable();
@@ -57,9 +86,39 @@ export class EditorService {
     const normalized = blocks
       .map((raw) => this.normalizeBlockFromApi(raw))
       .filter((b): b is Block => b !== null);
-    this.blocksSubject.next(
-      normalized.length > 0 ? normalized : [createTextBlock('')],
-    );
+    const forFirstPage =
+      normalized.length > 0 ? normalized : [createTextBlock('')];
+    const s = this.getState();
+    if (s.pages.length === 0) {
+      return;
+    }
+    const pages = [...s.pages];
+    const first = pages[0];
+    pages[0] = { ...first, blocks: forFirstPage };
+    this.workspaceSubject.next({ ...s, pages });
+  }
+
+  selectPage(pageId: string): void {
+    const s = this.getState();
+    if (!s.pages.some((p) => p.id === pageId)) {
+      return;
+    }
+    if (s.activePageId === pageId) {
+      return;
+    }
+    this.workspaceSubject.next({ ...s, activePageId: pageId });
+  }
+
+  addPage(): void {
+    const s = this.getState();
+    const nextNum = s.pages.length + 1;
+    const newPage = createEditorPage(`Dashboard ${nextNum}`, [
+      createTextBlock(''),
+    ]);
+    this.workspaceSubject.next({
+      pages: [...s.pages, newPage],
+      activePageId: newPage.id,
+    });
   }
 
   openBlockTypeDrawer(): void {
@@ -77,7 +136,8 @@ export class EditorService {
 
   private insertBlockAtEndOfType(type: BlockType): void {
     const created = this.createBlockOfType(type);
-    this.blocksSubject.next([...this.blocksSubject.value, created]);
+    const blocks = this.getActiveBlocks();
+    this.setActivePageBlocks([...blocks, created]);
     this.requestFocusAfterInsert(created);
   }
 
@@ -97,7 +157,7 @@ export class EditorService {
   }
 
   reorderBlocks(previousIndex: number, currentIndex: number): void {
-    const blocks = this.blocksSubject.value;
+    const blocks = this.getActiveBlocks();
     if (
       previousIndex < 0 ||
       currentIndex < 0 ||
@@ -112,11 +172,11 @@ export class EditorService {
     const next = [...blocks];
     const [moved] = next.splice(previousIndex, 1);
     next.splice(currentIndex, 0, moved);
-    this.blocksSubject.next(next);
+    this.setActivePageBlocks(next);
   }
 
   updateBlockContent(blockId: string, content: string): void {
-    const blocks = this.blocksSubject.value;
+    const blocks = this.getActiveBlocks();
     const index = blocks.findIndex((b) => b.id === blockId);
     if (index === -1) {
       return;
@@ -130,11 +190,11 @@ export class EditorService {
     }
     const next = [...blocks];
     next[index] = { ...previous, content };
-    this.blocksSubject.next(next);
+    this.setActivePageBlocks(next);
   }
 
   handleBlockKeydown(blockId: string, event: KeyboardEvent, snapshot: BlockFieldSnapshot): void {
-    const blocks = this.blocksSubject.value;
+    const blocks = this.getActiveBlocks();
     const block = blocks.find((b) => b.id === blockId);
     if (!block || block.type === BlockType.Checklist) {
       return;
@@ -218,7 +278,7 @@ export class EditorService {
     if (snapshot.value.length > 0) {
       return;
     }
-    const blocks = this.blocksSubject.value;
+    const blocks = this.getActiveBlocks();
     const block = blocks.find((b) => b.id === blockId);
     if (!block || block.type !== BlockType.Checklist) {
       return;
@@ -248,7 +308,7 @@ export class EditorService {
     blockId: string,
     patch: (block: ChecklistBlock) => ChecklistBlock,
   ): void {
-    const blocks = this.blocksSubject.value;
+    const blocks = this.getActiveBlocks();
     const index = blocks.findIndex((b) => b.id === blockId);
     if (index === -1) {
       return;
@@ -259,7 +319,7 @@ export class EditorService {
     }
     const next = [...blocks];
     next[index] = patch(current);
-    this.blocksSubject.next(next);
+    this.setActivePageBlocks(next);
   }
 
   private isSplitLineKey(event: KeyboardEvent): boolean {
@@ -275,14 +335,14 @@ export class EditorService {
   }
 
   private insertTextBlockAfter(afterId: string, initialContent: string): string {
-    const blocks = this.blocksSubject.value;
+    const blocks = this.getActiveBlocks();
     const index = blocks.findIndex((b) => b.id === afterId);
     if (index === -1) {
       return afterId;
     }
     const inserted = createTextBlock(initialContent);
     const next = [...blocks.slice(0, index + 1), inserted, ...blocks.slice(index + 1)];
-    this.blocksSubject.next(next);
+    this.setActivePageBlocks(next);
     return inserted.id;
   }
 
@@ -294,7 +354,7 @@ export class EditorService {
     if (snapshot.value.length > 0) {
       return;
     }
-    const blocks = this.blocksSubject.value;
+    const blocks = this.getActiveBlocks();
     if (blocks.length <= 1) {
       return;
     }
@@ -303,13 +363,13 @@ export class EditorService {
   }
 
   private removeBlockAndFocusNeighbor(blockId: string): void {
-    const blocks = this.blocksSubject.value;
+    const blocks = this.getActiveBlocks();
     const index = blocks.findIndex((b) => b.id === blockId);
     if (index === -1) {
       return;
     }
     const next = blocks.filter((b) => b.id !== blockId);
-    this.blocksSubject.next(next);
+    this.setActivePageBlocks(next);
     const focusIndex = index > 0 ? index - 1 : 0;
     const focusBlock = next[focusIndex];
     if (focusBlock.type === BlockType.Checklist) {
@@ -322,6 +382,24 @@ export class EditorService {
 
   private requestFocus(blockId: string, checklistItemIndex?: number): void {
     this.focusRequestSubject.next({ blockId, checklistItemIndex });
+  }
+
+  private getState(): EditorWorkspaceState {
+    return this.workspaceSubject.value;
+  }
+
+  private getActiveBlocks(): Block[] {
+    const s = this.getState();
+    const page = s.pages.find((p) => p.id === s.activePageId);
+    return page ? page.blocks : [];
+  }
+
+  private setActivePageBlocks(blocks: Block[]): void {
+    const s = this.getState();
+    const pages = s.pages.map((p) =>
+      p.id === s.activePageId ? { ...p, blocks } : p,
+    );
+    this.workspaceSubject.next({ ...s, pages });
   }
 
   private normalizeBlockFromApi(raw: unknown): Block | null {

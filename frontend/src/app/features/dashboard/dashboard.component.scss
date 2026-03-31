@@ -5,16 +5,87 @@
   --dashboard-surface: #ffffff;
   --dashboard-accent: #2eaadc;
 
+  display: flex;
   min-height: 100dvh;
-  padding: 3.25rem 1.5rem 5.5rem;
   box-sizing: border-box;
   background: var(--dashboard-bg);
   color: var(--dashboard-fg);
 }
 
+.dashboard-shell__sidebar {
+  flex: 0 0 260px;
+  max-width: min(260px, 36vw);
+  min-width: 200px;
+  align-self: stretch;
+}
+
+.dashboard-shell__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 3.25rem 1.5rem 5.5rem;
+  box-sizing: border-box;
+}
+
 .dashboard-doc {
   max-width: min(700px, 92vw);
   margin: 0 auto;
+  width: 100%;
+}
+
+.dashboard-blocks-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem 1rem;
+  margin-bottom: 0.85rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  background: var(--dashboard-surface);
+  border: 1px solid color-mix(in srgb, var(--dashboard-fg) 8%, transparent);
+  box-shadow: 0 1px 2px rgb(15 15 15 / 5%);
+}
+
+.dashboard-blocks-toolbar__hint {
+  margin: 0;
+  flex: 1;
+  min-width: 12rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--dashboard-fg) 52%, transparent);
+}
+
+.dashboard-blocks-toolbar__btn {
+  flex-shrink: 0;
+  appearance: none;
+  border: 1px solid color-mix(in srgb, var(--dashboard-fg) 14%, transparent);
+  border-radius: 8px;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--dashboard-fg);
+  background: color-mix(in srgb, var(--dashboard-fg) 5%, var(--dashboard-surface));
+  transition:
+    background 120ms ease,
+    border-color 120ms ease;
+}
+
+.dashboard-blocks-toolbar__btn:hover {
+  background: color-mix(in srgb, var(--dashboard-fg) 9%, var(--dashboard-surface));
+}
+
+.dashboard-blocks-toolbar__btn--active {
+  border-color: color-mix(in srgb, var(--dashboard-accent) 35%, transparent);
+  background: color-mix(in srgb, var(--dashboard-accent) 14%, var(--dashboard-surface));
+  color: var(--dashboard-fg);
+}
+
+.dashboard-blocks-toolbar__btn:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--dashboard-accent) 45%, transparent);
+  outline-offset: 2px;
 }
 
 .dashboard-floating-bar {
@@ -36,8 +107,7 @@
   max-width: calc(100vw - 2rem);
 }
 
-.dashboard-add-btn,
-.dashboard-reorder-btn {
+.dashboard-add-btn {
   appearance: none;
   border: none;
   border-radius: 999px;
@@ -47,9 +117,6 @@
   cursor: pointer;
   color: var(--dashboard-fg);
   transition: background 120ms ease, box-shadow 120ms ease;
-}
-
-.dashboard-add-btn {
   background: color-mix(in srgb, var(--dashboard-accent) 12%, var(--dashboard-surface));
 }
 
@@ -57,21 +124,7 @@
   background: color-mix(in srgb, var(--dashboard-accent) 20%, var(--dashboard-surface));
 }
 
-.dashboard-reorder-btn {
-  background: color-mix(in srgb, var(--dashboard-fg) 8%, var(--dashboard-surface));
-}
-
-.dashboard-reorder-btn:hover {
-  background: color-mix(in srgb, var(--dashboard-fg) 12%, var(--dashboard-surface));
-}
-
-.dashboard-reorder-btn--active {
-  background: color-mix(in srgb, var(--dashboard-accent) 22%, var(--dashboard-surface));
-  font-weight: 600;
-}
-
-.dashboard-add-btn:focus-visible,
-.dashboard-reorder-btn:focus-visible {
+.dashboard-add-btn:focus-visible {
   outline: 2px solid color-mix(in srgb, var(--dashboard-accent) 45%, transparent);
   outline-offset: 2px;
 }

@@ -1,0 +1,30 @@
+<aside class="workspace-sidebar" aria-label="Tus dashboards">
+  <div class="workspace-sidebar__brand">
+    <span class="workspace-sidebar__logo">Space Pad</span>
+  </div>
+
+  <div class="workspace-sidebar__section-title">Dashboards</div>
+
+  @if (workspace$ | async; as ws) {
+    <nav class="workspace-sidebar__nav" aria-label="Lista de dashboards">
+      <ul class="workspace-sidebar__list">
+        @for (page of ws.pages; track page.id) {
+          <li>
+            <button
+              type="button"
+              class="workspace-sidebar__item"
+              [class.workspace-sidebar__item--active]="page.id === ws.activePageId"
+              (click)="editor.selectPage(page.id)"
+            >
+              <span class="workspace-sidebar__item-title">{{ page.title }}</span>
+            </button>
+          </li>
+        }
+      </ul>
+    </nav>
+  }
+
+  <button type="button" class="workspace-sidebar__new" (click)="editor.addPage()">
+    + Nuevo dashboard
+  </button>
+</aside>

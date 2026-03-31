@@ -12,6 +12,7 @@ import { take } from 'rxjs';
 import { BlocksApiService } from '../../core/api/blocks-api.service';
 import { BottomDrawerComponent } from './components/bottom-drawer/bottom-drawer.component';
 import { BlockListComponent } from './components/block-list/block-list.component';
+import { WorkspaceSidebarComponent } from './components/workspace-sidebar/workspace-sidebar.component';
 import {
   BlockContentChangePayload,
   BlocksReorderPayload,
@@ -25,7 +26,12 @@ import { EditorFocusRequest, EditorService } from './services/editor.service';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [AsyncPipe, BlockListComponent, BottomDrawerComponent],
+  imports: [
+    AsyncPipe,
+    WorkspaceSidebarComponent,
+    BlockListComponent,
+    BottomDrawerComponent,
+  ],
   providers: [EditorService],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',

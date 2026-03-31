@@ -1,33 +1,50 @@
 <div class="dashboard-shell">
-  <main class="dashboard-doc" aria-label="Dashboard">
-    @if (blocks$ | async; as blocks) {
-      <app-block-list
-        [blocks]="blocks"
-        [reorderMode]="reorderMode()"
-        (blocksReordered)="onBlocksReordered($event)"
-        (contentChange)="onTextLikeContent($event)"
-        (fieldKeydown)="onTextLikeFieldKeydown($event)"
-        (toggleItem)="onChecklistToggle($event)"
-        (itemTextChange)="onChecklistItemText($event)"
-        (itemKeydown)="onChecklistItemKeydown($event)"
-      />
-    }
-  </main>
+  <app-workspace-sidebar class="dashboard-shell__sidebar" />
 
-  <footer class="dashboard-floating-bar" aria-label="Dashboard actions">
-    <button type="button" class="dashboard-add-btn" (click)="editor.openBlockTypeDrawer()">
-      Add block
-    </button>
-    <button
-      type="button"
-      class="dashboard-reorder-btn"
-      [class.dashboard-reorder-btn--active]="reorderMode()"
-      [attr.aria-pressed]="reorderMode()"
-      (click)="toggleReorderMode()"
-    >
-      {{ reorderMode() ? 'Done reordering' : 'Reorder blocks' }}
-    </button>
-  </footer>
+  <div class="dashboard-shell__main">
+    <main class="dashboard-doc" aria-label="Contenido del dashboard">
+      @if (blocks$ | async; as blocks) {
+        <section
+          class="dashboard-blocks-toolbar"
+          aria-label="Organización de bloques"
+        >
+          <p class="dashboard-blocks-toolbar__hint">
+            @if (reorderMode()) {
+              Arrastrá cada bloque por el asa izquierda para cambiar el orden.
+            } @else {
+              Activá el modo reordenar para mover bloques con el asa.
+            }
+          </p>
+          <button
+            type="button"
+            class="dashboard-blocks-toolbar__btn"
+            [class.dashboard-blocks-toolbar__btn--active]="reorderMode()"
+            [attr.aria-pressed]="reorderMode()"
+            (click)="toggleReorderMode()"
+          >
+            {{ reorderMode() ? 'Listo' : 'Reordenar bloques' }}
+          </button>
+        </section>
+
+        <app-block-list
+          [blocks]="blocks"
+          [reorderMode]="reorderMode()"
+          (blocksReordered)="onBlocksReordered($event)"
+          (contentChange)="onTextLikeContent($event)"
+          (fieldKeydown)="onTextLikeFieldKeydown($event)"
+          (toggleItem)="onChecklistToggle($event)"
+          (itemTextChange)="onChecklistItemText($event)"
+          (itemKeydown)="onChecklistItemKeydown($event)"
+        />
+      }
+    </main>
+
+    <footer class="dashboard-floating-bar" aria-label="Acciones del dashboard">
+      <button type="button" class="dashboard-add-btn" (click)="editor.openBlockTypeDrawer()">
+        Add block
+      </button>
+    </footer>
+  </div>
 </div>
 
 <app-bottom-drawer
