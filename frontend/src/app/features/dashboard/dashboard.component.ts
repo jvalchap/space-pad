@@ -12,6 +12,9 @@ import { take } from 'rxjs';
 import { BlocksApiService } from '../../core/api/blocks-api.service';
 import { BottomDrawerComponent } from './components/bottom-drawer/bottom-drawer.component';
 import { BlockListComponent } from './components/block-list/block-list.component';
+import { GlobalSearchBarComponent } from './components/global-search-bar/global-search-bar.component';
+import { PanelTagsBarComponent } from './components/panel-tags-bar/panel-tags-bar.component';
+import { ThemeToggleComponent } from './components/theme-toggle/theme-toggle.component';
 import { WorkspaceSidebarComponent } from './components/workspace-sidebar/workspace-sidebar.component';
 import {
   BlockContentChangePayload,
@@ -21,6 +24,7 @@ import {
   ChecklistTogglePayload,
   TextLikeFieldKeydownPayload,
 } from './models/block-ui-payloads.model';
+import { GlobalSearchService } from './services/global-search.service';
 import { EditorFocusRequest, EditorService } from './services/editor.service';
 
 @Component({
@@ -29,10 +33,13 @@ import { EditorFocusRequest, EditorService } from './services/editor.service';
   imports: [
     AsyncPipe,
     WorkspaceSidebarComponent,
+    GlobalSearchBarComponent,
+    ThemeToggleComponent,
+    PanelTagsBarComponent,
     BlockListComponent,
     BottomDrawerComponent,
   ],
-  providers: [EditorService],
+  providers: [EditorService, GlobalSearchService],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })

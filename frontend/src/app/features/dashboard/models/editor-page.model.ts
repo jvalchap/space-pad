@@ -1,13 +1,8 @@
-import { Block } from './block.model';
+import { Panel } from './panel.model';
 
-/** Una pestaña/espacio de trabajo: su propia lista de bloques (estilo página de Notion). */
-export interface EditorPage {
-  readonly id: string;
-  readonly title: string;
-  readonly blocks: Block[];
-}
+export type EditorPage = Panel;
 
 export interface EditorWorkspaceState {
-  readonly pages: readonly EditorPage[];
+  readonly pages: readonly Panel[];
   readonly activePageId: string;
 }

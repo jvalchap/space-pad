@@ -1,10 +1,62 @@
 /* You can add global styles to this file, and also import other style files */
 @import '@angular/cdk/overlay-prebuilt.css';
 
-/* Vista previa del CDK drag-drop (elemento en el overlay) */
+:root {
+  --dashboard-bg: #f7f6f3;
+  --dashboard-fg: #37352f;
+  --dashboard-muted: #787774;
+  --dashboard-surface: #ffffff;
+  --dashboard-accent: #2eaadc;
+  --dashboard-shadow-rgb: 15 15 15;
+  --dashboard-backdrop-rgb: 15 15 15;
+  --dashboard-search-mark-bg: color-mix(
+    in srgb,
+    var(--dashboard-accent) 26%,
+    transparent
+  );
+  --dashboard-search-hit-ring: color-mix(
+    in srgb,
+    var(--dashboard-accent) 42%,
+    transparent
+  );
+  --dashboard-sidebar-bg: color-mix(
+    in srgb,
+    var(--dashboard-fg) 5%,
+    var(--dashboard-surface)
+  );
+  --drawer-fg: var(--dashboard-fg);
+  --drawer-surface: var(--dashboard-surface);
+  --drawer-accent: var(--dashboard-accent);
+}
+
+html.dark-mode {
+  --dashboard-bg: #191919;
+  --dashboard-fg: #e6e4e1;
+  --dashboard-muted: #9a9691;
+  --dashboard-surface: #252524;
+  --dashboard-accent: #5eb0d6;
+  --dashboard-shadow-rgb: 0 0 0;
+  --dashboard-backdrop-rgb: 0 0 0;
+  --dashboard-search-mark-bg: color-mix(
+    in srgb,
+    var(--dashboard-accent) 32%,
+    transparent
+  );
+  --dashboard-search-hit-ring: color-mix(
+    in srgb,
+    var(--dashboard-accent) 48%,
+    transparent
+  );
+  --dashboard-sidebar-bg: color-mix(
+    in srgb,
+    var(--dashboard-bg) 55%,
+    var(--dashboard-surface)
+  );
+}
+
 .cdk-drag-preview {
   box-sizing: border-box;
   border-radius: 10px;
-  box-shadow: 0 12px 32px rgb(15 15 15 / 20%);
+  box-shadow: 0 12px 32px rgb(var(--dashboard-shadow-rgb) / 20%);
   opacity: 0.95;
 }

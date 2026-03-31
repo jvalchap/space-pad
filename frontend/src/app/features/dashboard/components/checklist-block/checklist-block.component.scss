@@ -24,7 +24,7 @@
 .checklist-row__checkbox {
   width: 1rem;
   height: 1rem;
-  accent-color: var(--dashboard-accent, #2eaadc);
+  accent-color: var(--dashboard-accent);
   cursor: pointer;
 }
 
@@ -37,17 +37,17 @@
   border-radius: 4px;
   font: inherit;
   line-height: 1.65;
-  color: var(--dashboard-fg, #37352f);
+  color: var(--dashboard-fg);
   background: transparent;
   outline: none;
 }
 
 .checklist-row__text:focus {
-  outline: 2px solid color-mix(in srgb, var(--dashboard-accent, #2eaadc) 35%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--dashboard-accent) 35%, transparent);
   outline-offset: 2px;
-  background: color-mix(in srgb, var(--dashboard-accent, #2eaadc) 4%, transparent);
+  background: color-mix(in srgb, var(--dashboard-accent) 4%, transparent);
 }
 
 .checklist-row__text:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--dashboard-accent, #3d9ccc) 45%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--dashboard-accent) 45%, transparent);
 }

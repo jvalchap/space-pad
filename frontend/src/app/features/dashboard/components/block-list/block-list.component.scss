@@ -16,18 +16,24 @@
 
 .block-list__row {
   border-radius: 10px;
-  background: var(--dashboard-surface, #ffffff);
-  box-shadow: 0 1px 2px rgb(15 15 15 / 6%);
+  background: var(--dashboard-surface);
+  box-shadow: 0 1px 2px rgb(var(--dashboard-shadow-rgb) / 6%);
+}
+
+.block-list__row--search-hit {
+  box-shadow:
+    0 1px 2px rgb(var(--dashboard-shadow-rgb) / 6%),
+    0 0 0 2px var(--dashboard-search-hit-ring);
 }
 
 .block-list .cdk-drag-placeholder {
   opacity: 0.4;
   background: color-mix(
     in srgb,
-    var(--dashboard-accent, #2eaadc) 12%,
-    var(--dashboard-surface, #fff)
+    var(--dashboard-accent) 12%,
+    var(--dashboard-surface)
   );
-  border: 2px dashed color-mix(in srgb, var(--dashboard-accent, #2eaadc) 45%, transparent);
+  border: 2px dashed color-mix(in srgb, var(--dashboard-accent) 45%, transparent);
   border-radius: 10px;
   min-height: 3rem;
   box-sizing: border-box;
@@ -60,8 +66,8 @@
   padding: 0.25rem;
   border: none;
   border-radius: 6px;
-  background: color-mix(in srgb, var(--dashboard-fg, #37352f) 6%, transparent);
-  color: color-mix(in srgb, var(--dashboard-fg, #37352f) 45%, transparent);
+  background: color-mix(in srgb, var(--dashboard-fg) 6%, transparent);
+  color: color-mix(in srgb, var(--dashboard-fg) 45%, transparent);
   cursor: grab;
 }
 
@@ -70,7 +76,7 @@
 }
 
 .block-list__handle:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--dashboard-accent, #2eaadc) 45%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--dashboard-accent) 45%, transparent);
   outline-offset: 2px;
 }
 

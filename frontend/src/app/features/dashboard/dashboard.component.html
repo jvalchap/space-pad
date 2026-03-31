@@ -2,32 +2,33 @@
   <app-workspace-sidebar class="dashboard-shell__sidebar" />
 
   <div class="dashboard-shell__main">
+    <header class="dashboard-top-bar">
+      <app-global-search-bar class="dashboard-top-bar__search" />
+      <app-theme-toggle />
+    </header>
+
+    <section
+    class="dashboard-blocks-toolbar"
+    aria-label="Organización de bloques"
+    >
+      <button
+        type="button"
+        class="dashboard-blocks-toolbar__btn"
+        [class.dashboard-blocks-toolbar__btn--active]="reorderMode()"
+        [attr.aria-pressed]="reorderMode()"
+        (click)="toggleReorderMode()"
+      >
+        {{ reorderMode() ? 'Done' : 'Reorder blocks' }}
+      </button>
+    </section>
+
     <main class="dashboard-doc" aria-label="Contenido del dashboard">
       @if (blocks$ | async; as blocks) {
-        <section
-          class="dashboard-blocks-toolbar"
-          aria-label="Organización de bloques"
-        >
-          <p class="dashboard-blocks-toolbar__hint">
-            @if (reorderMode()) {
-              Arrastrá cada bloque por el asa izquierda para cambiar el orden.
-            } @else {
-              Activá el modo reordenar para mover bloques con el asa.
-            }
-          </p>
-          <button
-            type="button"
-            class="dashboard-blocks-toolbar__btn"
-            [class.dashboard-blocks-toolbar__btn--active]="reorderMode()"
-            [attr.aria-pressed]="reorderMode()"
-            (click)="toggleReorderMode()"
-          >
-            {{ reorderMode() ? 'Listo' : 'Reordenar bloques' }}
-          </button>
-        </section>
+        <app-panel-tags-bar />
 
         <app-block-list
           [blocks]="blocks"
+          [highlightQuery]="(editor.globalSearchHighlight$ | async) ?? ''"
           [reorderMode]="reorderMode()"
           (blocksReordered)="onBlocksReordered($event)"
           (contentChange)="onTextLikeContent($event)"

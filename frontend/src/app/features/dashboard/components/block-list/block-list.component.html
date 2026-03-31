@@ -7,7 +7,12 @@
   (cdkDropListDropped)="onDrop($event)"
 >
   @for (block of blocks(); track block.id) {
-    <div class="block-list__row" cdkDrag [cdkDragDisabled]="!reorderMode()">
+    <div
+      class="block-list__row"
+      [class.block-list__row--search-hit]="rowMatchesHighlight(block)"
+      cdkDrag
+      [cdkDragDisabled]="!reorderMode()"
+    >
       <div class="block-list__row-inner">
         @if (reorderMode()) {
           <div class="block-list__handle-col">

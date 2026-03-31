@@ -8,7 +8,8 @@ import {
   isBlockType,
   TextBlock,
 } from '../models/block.model';
-import { EditorPage, EditorWorkspaceState } from '../models/editor-page.model';
+import { EditorWorkspaceState } from '../models/editor-page.model';
+import { Panel } from '../models/panel.model';
 
 function createBlockId(): string {
   return crypto.randomUUID();
@@ -32,11 +33,16 @@ function createChecklistBlock(): ChecklistBlock {
   };
 }
 
-function createEditorPage(title: string, blocks: Block[]): EditorPage {
+function createEditorPage(
+  title: string,
+  blocks: Block[],
+  tags: readonly string[] = [],
+): Panel {
   return {
     id: crypto.randomUUID(),
     title,
     blocks,
+    tags: [...tags],
   };
 }
 
@@ -72,9 +78,13 @@ export class EditorService {
   readonly blocks$: Observable<Block[]> = this.workspaceSubject.pipe(
     map((s) => {
       const page = s.pages.find((p) => p.id === s.activePageId);
-      return page ? page.blocks : [];
+      return page ? [...page.blocks] : [];
     }),
   );
+
+  private readonly globalSearchHighlightSubject = new BehaviorSubject('');
+  readonly globalSearchHighlight$: Observable<string> =
+    this.globalSearchHighlightSubject.asObservable();
 
   private readonly focusRequestSubject = new Subject<EditorFocusRequest>();
   readonly focusRequest$ = this.focusRequestSubject.asObservable();
@@ -119,6 +129,52 @@ export class EditorService {
       pages: [...s.pages, newPage],
       activePageId: newPage.id,
     });
+  }
+
+  addTagToPanel(panelId: string, rawTag: string): void {
+    const trimmed = rawTag.trim();
+    if (trimmed === '') {
+      return;
+    }
+    const s = this.getState();
+    const pages = s.pages.map((p) => {
+      if (p.id !== panelId) {
+        return p;
+      }
+      const lower = trimmed.toLowerCase();
+      if (p.tags.some((tag) => tag.toLowerCase() === lower)) {
+        return p;
+      }
+      return { ...p, tags: [...p.tags, trimmed] };
+    });
+    this.workspaceSubject.next({ ...s, pages });
+  }
+
+  removeTagFromPanel(panelId: string, tag: string): void {
+    const s = this.getState();
+    const pages = s.pages.map((p) => {
+      if (p.id !== panelId) {
+        return p;
+      }
+      const nextTags = p.tags.filter((t) => t !== tag);
+      if (nextTags.length === p.tags.length) {
+        return p;
+      }
+      return { ...p, tags: nextTags };
+    });
+    this.workspaceSubject.next({ ...s, pages });
+  }
+
+  setGlobalSearchHighlight(query: string): void {
+    this.globalSearchHighlightSubject.next(query.trim());
+  }
+
+  clearGlobalSearchHighlight(): void {
+    this.globalSearchHighlightSubject.next('');
+  }
+
+  focusBlock(blockId: string, checklistItemIndex?: number): void {
+    this.focusRequestSubject.next({ blockId, checklistItemIndex });
   }
 
   openBlockTypeDrawer(): void {
@@ -391,7 +447,7 @@ export class EditorService {
   private getActiveBlocks(): Block[] {
     const s = this.getState();
     const page = s.pages.find((p) => p.id === s.activePageId);
-    return page ? page.blocks : [];
+    return page ? [...page.blocks] : [];
   }
 
   private setActivePageBlocks(blocks: Block[]): void {

@@ -29,6 +29,8 @@ export class BlockListComponent {
 
   readonly blocks = input.required<Block[]>();
 
+  readonly highlightQuery = input('');
+
   readonly reorderMode = input(false, { transform: booleanAttribute });
 
   readonly blocksReordered = output<BlocksReorderPayload>();
@@ -68,5 +70,22 @@ export class BlockListComponent {
       previousIndex: event.previousIndex,
       currentIndex: event.currentIndex,
     });
+  }
+
+  rowMatchesHighlight(block: Block): boolean {
+    const needle = this.highlightQuery().trim().toLowerCase();
+    if (needle === '') {
+      return false;
+    }
+    if (block.type === BlockType.Text) {
+      return block.content.toLowerCase().includes(needle);
+    }
+    if (
+      block.content.toLowerCase().includes(needle) ||
+      block.items.some((item) => item.text.toLowerCase().includes(needle))
+    ) {
+      return true;
+    }
+    return false;
   }
 }

@@ -1,0 +1,8 @@
+<button
+  type="button"
+  class="theme-toggle"
+  [attr.aria-pressed]="theme.mode() === ThemeMode.Dark"
+  (click)="onClick()"
+>
+  {{ theme.mode() === ThemeMode.Dark ? 'Light mode' : 'Dark mode' }}
+</button>

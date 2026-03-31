@@ -1,0 +1,112 @@
+.panel-tags {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 10px;
+  background: var(--dashboard-surface);
+  border: 1px solid color-mix(in srgb, var(--dashboard-fg) 8%, transparent);
+  box-shadow: 0 1px 2px rgb(var(--dashboard-shadow-rgb) / 6%);
+}
+
+.panel-tags__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  min-height: 1.5rem;
+}
+
+.panel-tags__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.15rem 0.25rem 0.15rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: color-mix(in srgb, var(--dashboard-accent) 14%, var(--dashboard-surface));
+  color: var(--dashboard-fg);
+  border: 1px solid color-mix(in srgb, var(--dashboard-accent) 28%, transparent);
+}
+
+.panel-tags__chip-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: color-mix(in srgb, var(--dashboard-fg) 55%, transparent);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.panel-tags__chip-remove:hover {
+  background: color-mix(in srgb, var(--dashboard-fg) 8%, transparent);
+  color: var(--dashboard-fg);
+}
+
+.panel-tags__chip-remove:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--dashboard-accent) 45%, transparent);
+  outline-offset: 1px;
+}
+
+.panel-tags__form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.panel-tags__label {
+  flex: 1 0 100%;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--dashboard-fg) 48%, transparent);
+}
+
+.panel-tags__input {
+  flex: 1;
+  min-width: 8rem;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--dashboard-fg) 14%, transparent);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--dashboard-fg);
+  background: var(--dashboard-surface);
+}
+
+.panel-tags__input:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--dashboard-accent) 45%, transparent);
+  outline-offset: 1px;
+}
+
+.panel-tags__add-btn {
+  appearance: none;
+  border: 1px solid color-mix(in srgb, var(--dashboard-fg) 14%, transparent);
+  border-radius: 8px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--dashboard-fg);
+  background: color-mix(in srgb, var(--dashboard-fg) 5%, var(--dashboard-surface));
+}
+
+.panel-tags__add-btn:hover {
+  background: color-mix(in srgb, var(--dashboard-fg) 9%, var(--dashboard-surface));
+}
+
+.panel-tags__add-btn:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--dashboard-accent) 45%, transparent);
+  outline-offset: 2px;
+}

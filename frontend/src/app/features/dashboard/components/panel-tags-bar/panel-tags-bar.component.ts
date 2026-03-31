@@ -1,0 +1,46 @@
+import { AsyncPipe } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { map } from 'rxjs/operators';
+import { Panel } from '../../models/panel.model';
+import { EditorService } from '../../services/editor.service';
+
+@Component({
+  selector: 'app-panel-tags-bar',
+  standalone: true,
+  imports: [AsyncPipe, FormsModule],
+  templateUrl: './panel-tags-bar.component.html',
+  styleUrl: './panel-tags-bar.component.scss',
+})
+export class PanelTagsBarComponent {
+  readonly editor = inject(EditorService);
+
+  readonly activePanel$ = this.editor.workspace$.pipe(
+    map((workspace) => {
+      const match = workspace.pages.find(
+        (page) => page.id === workspace.activePageId,
+      );
+      return match ?? null;
+    }),
+  );
+
+  draft = '';
+
+  onAddTag(panel: Panel): void {
+    const value = this.draft.trim();
+    if (value === '') {
+      return;
+    }
+    this.editor.addTagToPanel(panel.id, value);
+    this.draft = '';
+  }
+
+  onRemoveTag(panel: Panel, tag: string): void {
+    this.editor.removeTagFromPanel(panel.id, tag);
+  }
+
+  onFormSubmit(panel: Panel, event: Event): void {
+    event.preventDefault();
+    this.onAddTag(panel);
+  }
+}

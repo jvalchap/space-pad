@@ -1,0 +1,49 @@
+<div class="global-search" role="search">
+  <label class="global-search__label" for="global-search-input">Search all panels</label>
+  <div class="global-search__control">
+    <input
+      id="global-search-input"
+      type="search"
+      class="global-search__input"
+      placeholder="Title, labels, block text..."
+      autocomplete="off"
+      [value]="query"
+      (input)="onQueryInput($any($event.target).value)"
+    />
+  </div>
+
+  @if (query.trim().length > 0) {
+    @if (search.results$ | async; as hits) {
+      <ul class="global-search__results" role="listbox" aria-label="Resultados de búsqueda">
+        @if (hits.length === 0) {
+          <li class="global-search__empty" role="option">No results</li>
+        } @else {
+          @for (hit of hits; track $index) {
+            <li role="none">
+              <button
+                type="button"
+                class="global-search__hit"
+                role="option"
+                (click)="onPickHit(hit)"
+              >
+                <span class="global-search__hit-meta">
+                  <span class="global-search__hit-title">{{ hit.panelTitle }}</span>
+                  <span class="global-search__hit-source">{{ sourceLabel(hit.source) }}</span>
+                </span>
+                <span class="global-search__hit-snippet">
+                  @for (segment of segmentsFor(hit.snippet); track $index) {
+                    @if (segment.isMatch) {
+                      <mark class="global-search__mark">{{ segment.text }}</mark>
+                    } @else {
+                      <span>{{ segment.text }}</span>
+                    }
+                  }
+                </span>
+              </button>
+            </li>
+          }
+        }
+      </ul>
+    }
+  }
+</div>

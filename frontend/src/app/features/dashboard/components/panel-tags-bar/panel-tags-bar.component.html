@@ -1,0 +1,34 @@
+@if (activePanel$ | async; as panel) {
+  @if (panel) {
+    <section class="panel-tags" aria-label="Etiquetas del panel">
+      <div class="panel-tags__chips" role="list">
+        @for (tag of panel.tags; track tag) {
+          <span class="panel-tags__chip" role="listitem">
+            <span class="panel-tags__chip-label">{{ tag }}</span>
+            <button
+              type="button"
+              class="panel-tags__chip-remove"
+              [attr.aria-label]="'Delete label ' + tag"
+              (click)="onRemoveTag(panel, tag)"
+            >
+              ×
+            </button>
+          </span>
+        }
+      </div>
+      <form class="panel-tags__form" (submit)="onFormSubmit(panel, $event)">
+        <label class="panel-tags__label" for="panel-tag-input">Add label</label>
+        <input
+          id="panel-tag-input"
+          type="text"
+          class="panel-tags__input"
+          placeholder="Ex. work, idea..."
+          autocomplete="off"
+          [(ngModel)]="draft"
+          name="panelTagDraft"
+        />
+        <button type="submit" class="panel-tags__add-btn">Add</button>
+      </form>
+    </section>
+  }
+}

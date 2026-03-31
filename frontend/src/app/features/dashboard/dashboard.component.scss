@@ -1,21 +1,33 @@
 .dashboard-shell {
-  --dashboard-fg: #37352f;
-  --dashboard-muted: #787774;
-  --dashboard-bg: #f7f6f3;
-  --dashboard-surface: #ffffff;
-  --dashboard-accent: #2eaadc;
-
   display: flex;
-  min-height: 100dvh;
+  min-height: 100vh;
   box-sizing: border-box;
   background: var(--dashboard-bg);
   color: var(--dashboard-fg);
 }
 
+.dashboard-top-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  width: 100%;
+  max-width: min(700px, 92vw);
+  margin: 0 auto 1rem;
+  padding: 0 0.25rem;
+  box-sizing: border-box;
+}
+
+.dashboard-top-bar__search {
+  flex: 1;
+  min-width: min(100%, 12rem);
+}
+
 .dashboard-shell__sidebar {
   flex: 0 0 260px;
   max-width: min(260px, 36vw);
-  min-width: 200px;
+  height: 100vh;
   align-self: stretch;
 }
 
@@ -45,7 +57,7 @@
   border-radius: 10px;
   background: var(--dashboard-surface);
   border: 1px solid color-mix(in srgb, var(--dashboard-fg) 8%, transparent);
-  box-shadow: 0 1px 2px rgb(15 15 15 / 5%);
+  box-shadow: 0 1px 2px rgb(var(--dashboard-shadow-rgb) / 5%);
 }
 
 .dashboard-blocks-toolbar__hint {
@@ -103,7 +115,7 @@
   background: color-mix(in srgb, var(--dashboard-surface) 92%, transparent);
   backdrop-filter: blur(10px);
   border: 1px solid color-mix(in srgb, var(--dashboard-fg) 8%, transparent);
-  box-shadow: 0 4px 24px rgb(15 15 15 / 10%);
+  box-shadow: 0 4px 24px rgb(var(--dashboard-shadow-rgb) / 10%);
   max-width: calc(100vw - 2rem);
 }
 

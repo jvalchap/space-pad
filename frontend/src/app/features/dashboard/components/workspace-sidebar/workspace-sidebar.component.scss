@@ -10,9 +10,8 @@
   width: 100%;
   padding: 0.75rem 0.5rem;
   box-sizing: border-box;
-  background: color-mix(in srgb, var(--dashboard-fg, #37352f), rgba(255, 255, 255, 0.965) 96%);
-  border-right: 1px solid
-    color-mix(in srgb, var(--dashboard-fg, #37352f) 10%, transparent);
+  background: var(--dashboard-sidebar-bg);
+  border-right: 1px solid color-mix(in srgb, var(--dashboard-fg) 10%, transparent);
 }
 
 .workspace-sidebar__brand {
@@ -24,7 +23,7 @@
   font-size: 0.8125rem;
   font-weight: 650;
   letter-spacing: -0.02em;
-  color: var(--dashboard-fg, #37352f);
+  color: var(--dashboard-fg);
 }
 
 .workspace-sidebar__section-title {
@@ -33,7 +32,7 @@
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--dashboard-fg, #37352f) 48%, transparent);
+  color: color-mix(in srgb, var(--dashboard-fg) 48%, transparent);
 }
 
 .workspace-sidebar__list {
@@ -50,7 +49,7 @@
 
 .workspace-sidebar__item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.45rem;
   width: 100%;
   margin: 0 0 2px;
@@ -58,7 +57,7 @@
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: var(--dashboard-fg, #37352f);
+  color: var(--dashboard-fg);
   font-size: 0.875rem;
   text-align: left;
   cursor: pointer;
@@ -66,25 +65,58 @@
 }
 
 .workspace-sidebar__item:hover {
-  background: color-mix(in srgb, var(--dashboard-fg, #37352f) 6%, transparent);
+  background: color-mix(in srgb, var(--dashboard-fg) 6%, transparent);
 }
 
 .workspace-sidebar__item--active {
-  background: color-mix(in srgb, var(--dashboard-accent, #2eaadc) 14%, transparent);
+  background: color-mix(in srgb, var(--dashboard-accent) 14%, transparent);
   font-weight: 600;
 }
 
 .workspace-sidebar__item--active:hover {
-  background: color-mix(in srgb, var(--dashboard-accent, #2eaadc) 20%, transparent);
+  background: color-mix(in srgb, var(--dashboard-accent) 20%, transparent);
 }
 
 .workspace-sidebar__item:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--dashboard-accent, #2eaadc) 45%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--dashboard-accent) 45%, transparent);
   outline-offset: 0;
+}
+
+.workspace-sidebar__item-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+  min-width: 0;
+  width: 100%;
 }
 
 .workspace-sidebar__item-title {
   min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.workspace-sidebar__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+  width: 100%;
+}
+
+.workspace-sidebar__tag {
+  display: inline-block;
+  max-width: 100%;
+  padding: 0.05rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--dashboard-fg) 72%, transparent);
+  background: color-mix(in srgb, var(--dashboard-fg) 8%, transparent);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -94,19 +126,19 @@
   margin-top: 0.75rem;
   padding: 0.45rem 0.5rem;
   width: 100%;
-  border: 1px dashed color-mix(in srgb, var(--dashboard-fg, #37352f) 22%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--dashboard-fg) 22%, transparent);
   border-radius: 8px;
   background: transparent;
-  color: color-mix(in srgb, var(--dashboard-fg, #37352f) 55%, transparent);
+  color: color-mix(in srgb, var(--dashboard-fg) 55%, transparent);
   font-size: 0.8125rem;
   cursor: pointer;
 }
 
 .workspace-sidebar__new:hover {
-  background: color-mix(in srgb, var(--dashboard-fg, #37352f) 5%, transparent);
-  color: var(--dashboard-fg, #37352f);
+  background: color-mix(in srgb, var(--dashboard-fg) 5%, transparent);
+  color: var(--dashboard-fg);
 }
 
 .workspace-sidebar__new:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--dashboard-accent, #2eaadc) 45%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--dashboard-accent) 45%, transparent);
 }

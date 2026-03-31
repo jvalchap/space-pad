@@ -16,7 +16,16 @@
               [class.workspace-sidebar__item--active]="page.id === ws.activePageId"
               (click)="editor.selectPage(page.id)"
             >
-              <span class="workspace-sidebar__item-title">{{ page.title }}</span>
+              <span class="workspace-sidebar__item-body">
+                <span class="workspace-sidebar__item-title">{{ page.title }}</span>
+                @if (page.tags.length > 0) {
+                  <span class="workspace-sidebar__tags" aria-label="Etiquetas">
+                    @for (tag of page.tags; track tag) {
+                      <span class="workspace-sidebar__tag">{{ tag }}</span>
+                    }
+                  </span>
+                }
+              </span>
             </button>
           </li>
         }

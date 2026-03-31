@@ -12,7 +12,7 @@
   resize: none;
   font: inherit;
   line-height: 1.65;
-  color: var(--dashboard-fg, #37352f);
+  color: var(--dashboard-fg);
   background: transparent;
   outline: none;
   box-shadow: none;
@@ -21,11 +21,11 @@
 }
 
 .text-block__field:focus {
-  outline: 2px solid color-mix(in srgb, var(--dashboard-accent, #2eaadc) 35%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--dashboard-accent) 35%, transparent);
   outline-offset: 2px;
-  background: color-mix(in srgb, var(--dashboard-accent, #2eaadc) 4%, transparent);
+  background: color-mix(in srgb, var(--dashboard-accent) 4%, transparent);
 }
 
 .text-block__field:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--dashboard-accent, #3d9ccc) 45%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--dashboard-accent) 45%, transparent);
 }
