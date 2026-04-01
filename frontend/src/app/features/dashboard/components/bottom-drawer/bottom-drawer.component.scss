@@ -92,6 +92,21 @@
   gap: 1rem;
 }
 
+@keyframes bottom-drawer-option-hover-pop {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(0.94);
+  }
+  68% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 .bottom-drawer__option {
   display: flex;
   flex-direction: column;
@@ -105,19 +120,21 @@
   color: var(--drawer-fg);
   cursor: pointer;
   font: inherit;
+  transform-origin: center;
   transition:
-    background 150ms ease,
-    border-color 150ms ease,
-    transform 150ms ease;
+    background var(--sp-transition-fast),
+    border-color var(--sp-transition-fast);
 }
 
 .bottom-drawer__option:hover {
   background: color-mix(in srgb, var(--drawer-accent) 8%, var(--drawer-surface));
   border-color: color-mix(in srgb, var(--drawer-accent) 22%, transparent);
+  animation: bottom-drawer-option-hover-pop 0.55s cubic-bezier(0.34, 1.15, 0.64, 1) both;
 }
 
 .bottom-drawer__option:active {
-  transform: scale(0.99);
+  animation: none;
+  transform: scale(0.97);
 }
 
 .bottom-drawer__option:focus-visible {
