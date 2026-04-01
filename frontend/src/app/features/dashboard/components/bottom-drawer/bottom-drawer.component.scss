@@ -88,8 +88,8 @@
   margin: 0;
   padding: 0;
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  flex-direction: row;
+  gap: 1rem;
 }
 
 .bottom-drawer__option {
@@ -97,7 +97,6 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 0.15rem;
-  width: 100%;
   margin: 0;
   padding: 0.85rem 1rem;
   border: 1px solid color-mix(in srgb, var(--drawer-fg) 8%, transparent);
@@ -105,7 +104,6 @@
   background: color-mix(in srgb, var(--drawer-fg) 3%, var(--drawer-surface));
   color: var(--drawer-fg);
   cursor: pointer;
-  text-align: left;
   font: inherit;
   transition:
     background 150ms ease,
