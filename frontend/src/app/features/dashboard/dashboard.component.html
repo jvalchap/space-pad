@@ -4,12 +4,11 @@
   <div class="dashboard-shell__main">
     <header class="dashboard-top-bar">
       <app-global-search-bar class="dashboard-top-bar__search" />
-      <app-theme-toggle />
     </header>
 
     <section
     class="dashboard-blocks-toolbar"
-    aria-label="Organización de bloques"
+    aria-label="Blocks organization"
     >
       <button
         type="button"
@@ -22,7 +21,7 @@
       </button>
     </section>
 
-    <main class="dashboard-doc" aria-label="Contenido del dashboard">
+    <main class="dashboard-doc" aria-label="Dashboard content">
       @if (blocks$ | async; as blocks) {
         <!-- <app-panel-tags-bar /> -->
 
@@ -41,7 +40,7 @@
       }
     </main>
 
-    <footer class="dashboard-floating-bar" aria-label="Acciones del dashboard">
+    <footer class="dashboard-floating-bar" aria-label="Block creation">
       <button type="button" class="dashboard-add-btn" (click)="dashboard.openBlockTypeDrawer()">
         What will you create?
       </button>

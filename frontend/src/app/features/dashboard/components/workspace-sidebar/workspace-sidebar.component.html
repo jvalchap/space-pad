@@ -1,12 +1,13 @@
 <aside class="workspace-sidebar" aria-label="Tus dashboards">
   <div class="workspace-sidebar__brand">
     <span class="workspace-sidebar__logo">Space Pad</span>
+    <app-theme-toggle />
   </div>
 
   <div class="workspace-sidebar__section-title">Dashboards</div>
 
   @if (workspace$ | async; as ws) {
-    <nav class="workspace-sidebar__nav" aria-label="Lista de dashboards">
+    <nav class="workspace-sidebar__nav" aria-label="Dashboard list">
       <ul class="workspace-sidebar__list">
         @for (page of ws.pages; track page.id) {
           <li>
@@ -19,7 +20,7 @@
               <span class="workspace-sidebar__item-body">
                 <span class="workspace-sidebar__item-title">{{ page.title }}</span>
                 @if (page.tags.length > 0) {
-                  <span class="workspace-sidebar__tags" aria-label="Etiquetas">
+                  <span class="workspace-sidebar__tags" aria-label="Labels">
                     @for (tag of page.tags; track tag) {
                       <span class="workspace-sidebar__tag">{{ tag }}</span>
                     }
