@@ -1,6 +1,6 @@
-import { Block, BlockType } from '../models/block.model';
+import { Block, BlockType } from '../models/block';
 import { GlobalSearchHit, GlobalSearchHitSource } from '../models/global-search-hit.model';
-import { EditorWorkspaceState } from '../models/editor-page.model';
+import { DashboardWorkspaceState } from '../models/dashboard-page.model';
 
 function buildSnippet(text: string, query: string, radius = 44): string {
   const normalized = text.replace(/\s+/g, ' ').trim();
@@ -77,7 +77,7 @@ function collectBlockHits(
 }
 
 export function computeGlobalSearchHits(
-  workspace: EditorWorkspaceState,
+  workspace: DashboardWorkspaceState,
   rawQuery: string,
 ): GlobalSearchHit[] {
   const query = rawQuery.trim();

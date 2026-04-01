@@ -14,7 +14,7 @@
               type="button"
               class="workspace-sidebar__item"
               [class.workspace-sidebar__item--active]="page.id === ws.activePageId"
-              (click)="editor.selectPage(page.id)"
+              (click)="dashboard.selectPage(page.id)"
             >
               <span class="workspace-sidebar__item-body">
                 <span class="workspace-sidebar__item-title">{{ page.title }}</span>
@@ -33,7 +33,7 @@
     </nav>
   }
 
-  <button type="button" class="workspace-sidebar__new" (click)="editor.addPage()">
+  <button type="button" class="workspace-sidebar__new" (click)="dashboard.addPage()">
     + Nuevo dashboard
   </button>
 </aside>

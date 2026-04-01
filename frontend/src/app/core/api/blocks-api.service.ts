@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, Observable, of } from 'rxjs';
-import { Block } from '../../features/dashboard/models/block.model';
+import { Block } from '../../features/dashboard/models/block';
 import { API_BASE_URL } from './api-base-url.token';
 
 @Injectable({

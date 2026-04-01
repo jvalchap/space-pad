@@ -28,7 +28,7 @@
 
         <app-block-list
           [blocks]="blocks"
-          [highlightQuery]="(editor.globalSearchHighlight$ | async) ?? ''"
+          [highlightQuery]="(dashboard.globalSearchHighlight$ | async) ?? ''"
           [reorderMode]="reorderMode()"
           (blocksReordered)="onBlocksReordered($event)"
           (contentChange)="onTextLikeContent($event)"
@@ -42,7 +42,7 @@
     </main>
 
     <footer class="dashboard-floating-bar" aria-label="Acciones del dashboard">
-      <button type="button" class="dashboard-add-btn" (click)="editor.openBlockTypeDrawer()">
+      <button type="button" class="dashboard-add-btn" (click)="dashboard.openBlockTypeDrawer()">
         Add block
       </button>
     </footer>
@@ -50,8 +50,8 @@
 </div>
 
 <app-bottom-drawer
-  [open]="(editor.blockTypeDrawerOpen$ | async) ?? false"
-  (closeDrawer)="editor.closeBlockTypeDrawer()"
-  (blockTypePicked)="editor.insertBlockTypeFromPicker($event)"
-  (templatePicked)="editor.appendBlocksFromTemplate($event)"
+  [open]="(dashboard.blockTypeDrawerOpen$ | async) ?? false"
+  (closeDrawer)="dashboard.closeBlockTypeDrawer()"
+  (blockTypePicked)="dashboard.insertBlockTypeFromPicker($event)"
+  (templatePicked)="dashboard.appendBlocksFromTemplate($event)"
 />

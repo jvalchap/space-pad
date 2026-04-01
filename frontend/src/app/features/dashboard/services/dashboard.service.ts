@@ -2,15 +2,17 @@ import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable, Subject } from 'rxjs';
 import {
   Block,
+  BlockFieldSnapshot,
+  BlockFocusRequest,
   BlockType,
   ChecklistBlock,
   ChecklistItem,
   isBlockType,
   isChecklistItemPriority,
   TextBlock,
-} from '../models/block.model';
-import { PanelTemplateId } from '../models/template.model';
-import { EditorWorkspaceState } from '../models/editor-page.model';
+} from '../models/block';
+import { PanelTemplateId } from '../models/block';
+import { DashboardWorkspaceState } from '../models/dashboard-page.model';
 import { Panel } from '../models/panel.model';
 import {
   createChecklistBlock,
@@ -20,7 +22,7 @@ import {
 } from './block-factory';
 import { TemplateService } from './template.service';
 
-function createEditorPage(
+function createDashboardPage(
   title: string,
   blocks: Block[],
   tags: readonly string[] = [],
@@ -33,36 +35,25 @@ function createEditorPage(
   };
 }
 
-function createInitialWorkspaceState(): EditorWorkspaceState {
+function createInitialWorkspaceState(): DashboardWorkspaceState {
   const empty = [...createDefaultEmptyBlocks()];
-  const page1 = createEditorPage('Dashboard 1', empty);
-  const page2 = createEditorPage('Dashboard 2', [...createDefaultEmptyBlocks()]);
+  const page1 = createDashboardPage('Dashboard 1', empty);
+  const page2 = createDashboardPage('Dashboard 2', [...createDefaultEmptyBlocks()]);
   return {
     pages: [page1, page2],
     activePageId: page1.id,
   };
 }
 
-export interface BlockFieldSnapshot {
-  readonly value: string;
-  readonly selectionStart: number;
-  readonly selectionEnd: number;
-}
-
-export interface EditorFocusRequest {
-  readonly blockId: string;
-  readonly checklistItemIndex?: number;
-}
-
 @Injectable()
-export class EditorService {
+export class DashboardService {
   private readonly templateService = inject(TemplateService);
 
-  private readonly workspaceSubject = new BehaviorSubject<EditorWorkspaceState>(
+  private readonly workspaceSubject = new BehaviorSubject<DashboardWorkspaceState>(
     createInitialWorkspaceState(),
   );
 
-  readonly workspace$: Observable<EditorWorkspaceState> =
+  readonly workspace$: Observable<DashboardWorkspaceState> =
     this.workspaceSubject.asObservable();
 
   readonly blocks$: Observable<Block[]> = this.workspaceSubject.pipe(
@@ -76,7 +67,7 @@ export class EditorService {
   readonly globalSearchHighlight$: Observable<string> =
     this.globalSearchHighlightSubject.asObservable();
 
-  private readonly focusRequestSubject = new Subject<EditorFocusRequest>();
+  private readonly focusRequestSubject = new Subject<BlockFocusRequest>();
   readonly focusRequest$ = this.focusRequestSubject.asObservable();
 
   private readonly blockTypeDrawerOpenSubject = new BehaviorSubject(false);
@@ -114,7 +105,7 @@ export class EditorService {
     const nextNum = s.pages.length + 1;
     const blocks = this.templateService.createBlocksForTemplate(templateId);
     const title = this.templateService.resolvePanelTitle(templateId, nextNum);
-    const newPage = createEditorPage(title, blocks);
+    const newPage = createDashboardPage(title, blocks);
     this.workspaceSubject.next({
       pages: [...s.pages, newPage],
       activePageId: newPage.id,
@@ -164,7 +155,7 @@ export class EditorService {
   }
 
   focusBlock(blockId: string, checklistItemIndex?: number): void {
-    this.focusRequestSubject.next({ blockId, checklistItemIndex });
+    this.requestFocus(blockId, checklistItemIndex);
   }
 
   openBlockTypeDrawer(): void {
@@ -465,7 +456,7 @@ export class EditorService {
     this.focusRequestSubject.next({ blockId, checklistItemIndex });
   }
 
-  private getState(): EditorWorkspaceState {
+  private getState(): DashboardWorkspaceState {
     return this.workspaceSubject.value;
   }
 

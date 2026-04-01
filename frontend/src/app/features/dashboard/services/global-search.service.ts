@@ -3,16 +3,16 @@ import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { GlobalSearchHit } from '../models/global-search-hit.model';
 import { computeGlobalSearchHits } from '../utils/global-search.util';
-import { EditorService } from './editor.service';
+import { DashboardService } from './dashboard.service';
 
 @Injectable()
 export class GlobalSearchService {
-  private readonly editor = inject(EditorService);
+  private readonly dashboard = inject(DashboardService);
 
   private readonly querySubject = new BehaviorSubject('');
 
   readonly results$: Observable<GlobalSearchHit[]> = combineLatest([
-    this.editor.workspace$,
+    this.dashboard.workspace$,
     this.querySubject.pipe(debounceTime(180), distinctUntilChanged()),
   ]).pipe(
     map(([workspace, query]) => computeGlobalSearchHits(workspace, query)),

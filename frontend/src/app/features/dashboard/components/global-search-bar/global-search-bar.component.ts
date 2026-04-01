@@ -4,7 +4,7 @@ import {
   GlobalSearchHit,
   GlobalSearchHitSource,
 } from '../../models/global-search-hit.model';
-import { EditorService } from '../../services/editor.service';
+import { DashboardService } from '../../services/dashboard.service';
 import { GlobalSearchService } from '../../services/global-search.service';
 import { splitTextHighlightSegments } from '../../utils/text-highlight.util';
 
@@ -18,7 +18,7 @@ import { splitTextHighlightSegments } from '../../utils/text-highlight.util';
 export class GlobalSearchBarComponent {
   readonly search = inject(GlobalSearchService);
 
-  readonly editor = inject(EditorService);
+  readonly dashboard = inject(DashboardService);
 
   readonly HitSource = GlobalSearchHitSource;
 
@@ -28,7 +28,7 @@ export class GlobalSearchBarComponent {
     this.query = raw;
     this.search.setQuery(raw);
     if (raw.trim() === '') {
-      this.editor.clearGlobalSearchHighlight();
+      this.dashboard.clearGlobalSearchHighlight();
     }
   }
 
@@ -49,11 +49,11 @@ export class GlobalSearchBarComponent {
 
   onPickHit(hit: GlobalSearchHit): void {
     const trimmed = this.query.trim();
-    this.editor.selectPage(hit.panelId);
-    this.editor.setGlobalSearchHighlight(trimmed);
+    this.dashboard.selectPage(hit.panelId);
+    this.dashboard.setGlobalSearchHighlight(trimmed);
     if (hit.blockId) {
       queueMicrotask(() =>
-        this.editor.focusBlock(hit.blockId!, hit.checklistItemIndex),
+        this.dashboard.focusBlock(hit.blockId!, hit.checklistItemIndex),
       );
     }
   }

@@ -4,19 +4,17 @@ import { ChecklistBlockComponent } from '../checklist-block/checklist-block.comp
 import { TextBlockComponent } from '../text-block/text-block.component';
 import {
   Block,
-  BlockType,
-  ChecklistBlock,
-  TextBlock,
-} from '../../models/block.model';
-import {
   BlockContentChangePayload,
+  BlockType,
   BlocksReorderPayload,
+  ChecklistBlock,
   ChecklistItemKeydownPayload,
   ChecklistItemPriorityPayload,
   ChecklistItemTextPayload,
   ChecklistTogglePayload,
+  TextBlock,
   TextLikeFieldKeydownPayload,
-} from '../../models/block-ui-payloads.model';
+} from '../../models/block';
 
 @Component({
   selector: 'app-block-list',

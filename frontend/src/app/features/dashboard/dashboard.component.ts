@@ -23,10 +23,11 @@ import {
   ChecklistItemPriorityPayload,
   ChecklistItemTextPayload,
   ChecklistTogglePayload,
+  BlockFocusRequest,
   TextLikeFieldKeydownPayload,
-} from './models/block-ui-payloads.model';
+} from './models/block';
 import { GlobalSearchService } from './services/global-search.service';
-import { EditorFocusRequest, EditorService } from './services/editor.service';
+import { DashboardService } from './services/dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -40,12 +41,12 @@ import { EditorFocusRequest, EditorService } from './services/editor.service';
     BlockListComponent,
     BottomDrawerComponent,
   ],
-  providers: [EditorService, GlobalSearchService],
+  providers: [DashboardService, GlobalSearchService],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent {
-  readonly editor = inject(EditorService);
+  readonly dashboard = inject(DashboardService);
 
   private readonly blocksApi = inject(BlocksApiService);
 
@@ -53,13 +54,13 @@ export class DashboardComponent {
 
   private readonly platformId = inject(PLATFORM_ID);
 
-  readonly blocks$ = this.editor.blocks$;
+  readonly blocks$ = this.dashboard.blocks$;
 
   readonly reorderMode = signal(false);
 
   constructor() {
-    this.editor.focusRequest$.pipe(takeUntilDestroyed()).subscribe((request) => {
-      queueMicrotask(() => this.focusEditorTarget(request));
+    this.dashboard.focusRequest$.pipe(takeUntilDestroyed()).subscribe((request) => {
+      queueMicrotask(() => this.focusDashboardTarget(request));
     });
 
     afterNextRender(() => {
@@ -69,7 +70,7 @@ export class DashboardComponent {
       this.blocksApi
         .getBlocks()
         .pipe(take(1), takeUntilDestroyed(this.destroyRef))
-        .subscribe((blocks) => this.editor.loadBlocksFromApi(blocks));
+        .subscribe((blocks) => this.dashboard.loadBlocksFromApi(blocks));
     });
   }
 
@@ -78,15 +79,15 @@ export class DashboardComponent {
   }
 
   onBlocksReordered(payload: BlocksReorderPayload): void {
-    this.editor.reorderBlocks(payload.previousIndex, payload.currentIndex);
+    this.dashboard.reorderBlocks(payload.previousIndex, payload.currentIndex);
   }
 
   onTextLikeContent(payload: BlockContentChangePayload): void {
-    this.editor.updateBlockContent(payload.blockId, payload.content);
+    this.dashboard.updateBlockContent(payload.blockId, payload.content);
   }
 
   onTextLikeFieldKeydown(payload: TextLikeFieldKeydownPayload): void {
-    this.editor.handleBlockKeydown(
+    this.dashboard.handleBlockKeydown(
       payload.blockId,
       payload.keyboardEvent,
       payload.snapshot,
@@ -94,11 +95,11 @@ export class DashboardComponent {
   }
 
   onChecklistToggle(payload: ChecklistTogglePayload): void {
-    this.editor.toggleChecklistItem(payload.blockId, payload.itemIndex);
+    this.dashboard.toggleChecklistItem(payload.blockId, payload.itemIndex);
   }
 
   onChecklistItemText(payload: ChecklistItemTextPayload): void {
-    this.editor.updateChecklistItemText(
+    this.dashboard.updateChecklistItemText(
       payload.blockId,
       payload.itemIndex,
       payload.text,
@@ -106,7 +107,7 @@ export class DashboardComponent {
   }
 
   onChecklistItemKeydown(payload: ChecklistItemKeydownPayload): void {
-    this.editor.handleChecklistItemKeydown(
+    this.dashboard.handleChecklistItemKeydown(
       payload.blockId,
       payload.itemIndex,
       payload.keyboardEvent,
@@ -115,14 +116,14 @@ export class DashboardComponent {
   }
 
   onChecklistItemPriority(payload: ChecklistItemPriorityPayload): void {
-    this.editor.updateChecklistItemPriority(
+    this.dashboard.updateChecklistItemPriority(
       payload.blockId,
       payload.itemIndex,
       payload.priority ?? undefined,
     );
   }
 
-  private focusEditorTarget(request: EditorFocusRequest): void {
+  private focusDashboardTarget(request: BlockFocusRequest): void {
     if (typeof document === 'undefined') {
       return;
     }

@@ -1,4 +1,4 @@
-import { Block } from './block.model';
+import { Block } from './block';
 
 export interface Panel {
   readonly id: string;

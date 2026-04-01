@@ -6,8 +6,7 @@ import {
   input,
   output,
 } from '@angular/core';
-import { BlockType } from '../../models/block.model';
-import { PanelTemplateId } from '../../models/template.model';
+import { BlockType, PanelTemplateId } from '../../models/block';
 import { TemplateService } from '../../services/template.service';
 
 @Component({

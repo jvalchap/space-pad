@@ -1,8 +1,8 @@
 import { Panel } from './panel.model';
 
-export type EditorPage = Panel;
+export type DashboardPage = Panel;
 
-export interface EditorWorkspaceState {
+export interface DashboardWorkspaceState {
   readonly pages: readonly Panel[];
   readonly activePageId: string;
 }

@@ -8,15 +8,13 @@ import {
 } from '@angular/core';
 import {
   ChecklistBlock,
-  ChecklistItemPriority,
-  isChecklistItemPriority,
-} from '../../models/block.model';
-import {
   ChecklistItemKeydownPayload,
+  ChecklistItemPriority,
   ChecklistItemPriorityPayload,
   ChecklistItemTextPayload,
   ChecklistTogglePayload,
-} from '../../models/block-ui-payloads.model';
+  isChecklistItemPriority,
+} from '../../models/block';
 
 @Component({
   selector: 'app-checklist-block',

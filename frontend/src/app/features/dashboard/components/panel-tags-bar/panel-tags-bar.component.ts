@@ -3,7 +3,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { map } from 'rxjs/operators';
 import { Panel } from '../../models/panel.model';
-import { EditorService } from '../../services/editor.service';
+import { DashboardService } from '../../services/dashboard.service';
 
 @Component({
   selector: 'app-panel-tags-bar',
@@ -13,9 +13,9 @@ import { EditorService } from '../../services/editor.service';
   styleUrl: './panel-tags-bar.component.scss',
 })
 export class PanelTagsBarComponent {
-  readonly editor = inject(EditorService);
+  readonly dashboard = inject(DashboardService);
 
-  readonly activePanel$ = this.editor.workspace$.pipe(
+  readonly activePanel$ = this.dashboard.workspace$.pipe(
     map((workspace) => {
       const match = workspace.pages.find(
         (page) => page.id === workspace.activePageId,
@@ -31,12 +31,12 @@ export class PanelTagsBarComponent {
     if (value === '') {
       return;
     }
-    this.editor.addTagToPanel(panel.id, value);
+    this.dashboard.addTagToPanel(panel.id, value);
     this.draft = '';
   }
 
   onRemoveTag(panel: Panel, tag: string): void {
-    this.editor.removeTagFromPanel(panel.id, tag);
+    this.dashboard.removeTagFromPanel(panel.id, tag);
   }
 
   onFormSubmit(panel: Panel, event: Event): void {

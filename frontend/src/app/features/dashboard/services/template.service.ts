@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Block, ChecklistItemPriority } from '../models/block.model';
-import { PanelTemplate, PanelTemplateId } from '../models/template.model';
+import {
+  Block,
+  ChecklistItemPriority,
+  PanelTemplate,
+  PanelTemplateId,
+} from '../models/block';
 import {
   createChecklistBlock,
   createChecklistItem,

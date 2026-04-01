@@ -2,7 +2,7 @@
   --drawer-fg: var(--dashboard-fg);
   --drawer-surface: var(--dashboard-surface);
   --drawer-accent: var(--dashboard-accent);
-  display: contents;
+  display: block;
 }
 
 .bottom-drawer {
@@ -19,6 +19,7 @@
 .bottom-drawer__backdrop {
   position: absolute;
   inset: 0;
+  z-index: 0;
   background: rgb(var(--dashboard-backdrop-rgb) / 28%);
   opacity: 0;
   transition: opacity 280ms cubic-bezier(0.32, 0.72, 0, 1);
@@ -35,6 +36,7 @@
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 1;
   width: 100%;
   max-height: min(52vh, 420px);
   padding: 0 1rem 1.25rem;

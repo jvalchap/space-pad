@@ -4,7 +4,7 @@ import {
   ChecklistItem,
   ChecklistItemPriority,
   TextBlock,
-} from '../models/block.model';
+} from '../models/block';
 
 function createBlockId(): string {
   return crypto.randomUUID();

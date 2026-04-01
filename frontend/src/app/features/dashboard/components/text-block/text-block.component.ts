@@ -6,11 +6,11 @@ import {
   output,
   viewChild,
 } from '@angular/core';
-import { TextBlock } from '../../models/block.model';
 import {
   BlockContentChangePayload,
+  TextBlock,
   TextLikeFieldKeydownPayload,
-} from '../../models/block-ui-payloads.model';
+} from '../../models/block';
 
 @Component({
   selector: 'app-text-block',

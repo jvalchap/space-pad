@@ -1,6 +1,6 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { EditorService } from '../../services/editor.service';
+import { DashboardService } from '../../services/dashboard.service';
 
 @Component({
   selector: 'app-workspace-sidebar',
@@ -10,7 +10,7 @@ import { EditorService } from '../../services/editor.service';
   styleUrl: './workspace-sidebar.component.scss',
 })
 export class WorkspaceSidebarComponent {
-  readonly editor = inject(EditorService);
+  readonly dashboard = inject(DashboardService);
 
-  readonly workspace$ = this.editor.workspace$;
+  readonly workspace$ = this.dashboard.workspace$;
 }
