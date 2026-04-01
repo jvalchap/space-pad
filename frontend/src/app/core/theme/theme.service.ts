@@ -44,6 +44,6 @@ export class ThemeService {
 
   private applyModeToDocument(next: ThemeMode): void {
     const root = this.document.documentElement;
-    root.classList.toggle('dark-mode', next === ThemeMode.Dark);
+    root.classList.toggle('dark', next === ThemeMode.Dark);
   }
 }

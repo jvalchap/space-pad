@@ -1,24 +1,27 @@
 .theme-toggle {
   flex-shrink: 0;
   appearance: none;
-  border: 1px solid color-mix(in srgb, var(--dashboard-fg) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--sp-color-border) 80%, transparent);
   border-radius: 999px;
   padding: 0.4rem 0.85rem;
   font-size: 0.8125rem;
   font-weight: 600;
   cursor: pointer;
-  color: var(--dashboard-fg);
-  background: color-mix(in srgb, var(--dashboard-fg) 5%, var(--dashboard-surface));
+  color: var(--sp-color-text-primary);
+  background: var(--sp-color-surface);
+  box-shadow: var(--sp-shadow-sm);
   transition:
-    background 120ms ease,
-    border-color 120ms ease;
+    background var(--sp-transition-fast),
+    border-color var(--sp-transition-fast),
+    color var(--sp-transition-fast);
 }
 
 .theme-toggle:hover {
-  background: color-mix(in srgb, var(--dashboard-fg) 9%, var(--dashboard-surface));
+  background: color-mix(in srgb, var(--sp-color-accent) 10%, var(--sp-color-surface));
+  border-color: color-mix(in srgb, var(--sp-color-accent) 35%, transparent);
 }
 
 .theme-toggle:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--dashboard-accent) 45%, transparent);
+  outline: 2px solid var(--sp-focus-ring);
   outline-offset: 2px;
 }

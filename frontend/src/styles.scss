@@ -1,62 +1,132 @@
-/* You can add global styles to this file, and also import other style files */
+/* Space Pad — design tokens (light / dark). Components must use variables only. */
 @import '@angular/cdk/overlay-prebuilt.css';
 
+/* -------------------------------------------------------------------------- */
+/* Canonical tokens — light mode                                                 */
+/* -------------------------------------------------------------------------- */
 :root {
-  --dashboard-bg: #f7f6f3;
-  --dashboard-fg: #37352f;
-  --dashboard-muted: #787774;
-  --dashboard-surface: #ffffff;
-  --dashboard-accent: #2eaadc;
-  --dashboard-shadow-rgb: 15 15 15;
-  --dashboard-backdrop-rgb: 15 15 15;
+  --sp-color-page: #fafafa;
+  --sp-color-surface: #ffffff;
+  --sp-color-text-primary: #111827;
+  --sp-color-text-secondary: #6b7280;
+  --sp-color-border: #e5e7eb;
+  --sp-color-accent: #6366f1;
+
+  /* RGB triplets for rgb(var(--sp-rgb-shadow) / <alpha>) */
+  --sp-rgb-shadow: 17 24 39;
+  --sp-rgb-backdrop: 15 23 42;
+
+  --sp-color-sidebar: color-mix(
+    in srgb,
+    var(--sp-color-border) 42%,
+    var(--sp-color-page)
+  );
+
+  /* Coincide con la familia cargada en index.html (Google Fonts → Nunito) */
+  --sp-font-sans: 'Nunito', sans-serif;
+
+  --sp-radius-sm: 8px;
+  --sp-radius-md: 12px;
+  --sp-transition: 200ms ease;
+  --sp-transition-fast: 150ms ease;
+
+  --sp-shadow-sm: 0 1px 2px rgb(var(--sp-rgb-shadow) / 6%);
+  --sp-shadow-md: 0 4px 24px rgb(var(--sp-rgb-shadow) / 10%);
+  --sp-shadow-lg: 0 8px 28px rgb(var(--sp-rgb-shadow) / 14%);
+
+  --sp-focus-ring: color-mix(in srgb, var(--sp-color-accent) 45%, transparent);
+  --sp-accent-hover: color-mix(in srgb, var(--sp-color-accent) 12%, var(--sp-color-surface));
+  --sp-accent-hover-strong: color-mix(
+    in srgb,
+    var(--sp-color-accent) 20%,
+    var(--sp-color-surface)
+  );
+  --sp-accent-subtle-bg: color-mix(in srgb, var(--sp-color-accent) 8%, transparent);
+  --sp-input-focus-bg: color-mix(in srgb, var(--sp-color-accent) 6%, transparent);
+
+  /* Legacy aliases — dashboard feature (maps to tokens; do not hardcode in new code) */
+  --dashboard-bg: var(--sp-color-page);
+  --dashboard-fg: var(--sp-color-text-primary);
+  --dashboard-muted: var(--sp-color-text-secondary);
+  --dashboard-surface: var(--sp-color-surface);
+  --dashboard-accent: var(--sp-color-accent);
+  --dashboard-shadow-rgb: var(--sp-rgb-shadow);
+  --dashboard-backdrop-rgb: var(--sp-rgb-backdrop);
+  --dashboard-sidebar-bg: var(--sp-color-sidebar);
   --dashboard-search-mark-bg: color-mix(
     in srgb,
-    var(--dashboard-accent) 26%,
+    var(--sp-color-accent) 22%,
     transparent
   );
   --dashboard-search-hit-ring: color-mix(
     in srgb,
-    var(--dashboard-accent) 42%,
+    var(--sp-color-accent) 38%,
     transparent
-  );
-  --dashboard-sidebar-bg: color-mix(
-    in srgb,
-    var(--dashboard-fg) 5%,
-    var(--dashboard-surface)
-  );
-  --drawer-fg: var(--dashboard-fg);
-  --drawer-surface: var(--dashboard-surface);
-  --drawer-accent: var(--dashboard-accent);
-}
-
-html.dark-mode {
-  --dashboard-bg: #191919;
-  --dashboard-fg: #e6e4e1;
-  --dashboard-muted: #9a9691;
-  --dashboard-surface: #252524;
-  --dashboard-accent: #5eb0d6;
-  --dashboard-shadow-rgb: 0 0 0;
-  --dashboard-backdrop-rgb: 0 0 0;
-  --dashboard-search-mark-bg: color-mix(
-    in srgb,
-    var(--dashboard-accent) 32%,
-    transparent
-  );
-  --dashboard-search-hit-ring: color-mix(
-    in srgb,
-    var(--dashboard-accent) 48%,
-    transparent
-  );
-  --dashboard-sidebar-bg: color-mix(
-    in srgb,
-    var(--dashboard-bg) 55%,
-    var(--dashboard-surface)
   );
 }
 
+/* -------------------------------------------------------------------------- */
+/* Dark mode — class on <html> (ThemeService toggles `dark`)                   */
+/* -------------------------------------------------------------------------- */
+html.dark {
+  --sp-color-page: #0f172a;
+  --sp-color-surface: #1e293b;
+  --sp-color-text-primary: #f9fafb;
+  --sp-color-text-secondary: #94a3b8;
+  --sp-color-border: #334155;
+  --sp-color-accent: #818cf8;
+
+  --sp-rgb-shadow: 2 6 23;
+  --sp-rgb-backdrop: 2 6 23;
+
+  --sp-color-sidebar: color-mix(
+    in srgb,
+    var(--sp-color-surface) 72%,
+    var(--sp-color-page)
+  );
+
+  --sp-shadow-sm: 0 1px 2px rgb(var(--sp-rgb-shadow) / 25%);
+  --sp-shadow-md: 0 4px 24px rgb(var(--sp-rgb-shadow) / 35%);
+  --sp-shadow-lg: 0 8px 28px rgb(var(--sp-rgb-shadow) / 40%);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Global base                                                                 */
+/* -------------------------------------------------------------------------- */
+html {
+  color-scheme: light;
+  font-family: var(--sp-font-sans);
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-size: 1rem;
+  line-height: 1.5;
+  background: var(--sp-color-page);
+  color: var(--sp-color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition:
+    background-color var(--sp-transition),
+    color var(--sp-transition);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+/* CDK drag preview (portal; uses token shadow) */
 .cdk-drag-preview {
   box-sizing: border-box;
-  border-radius: 10px;
-  box-shadow: 0 12px 32px rgb(var(--dashboard-shadow-rgb) / 20%);
+  border-radius: var(--sp-radius-md);
+  box-shadow: var(--sp-shadow-lg);
   opacity: 0.95;
 }

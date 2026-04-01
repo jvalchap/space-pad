@@ -24,7 +24,7 @@
 
     <main class="dashboard-doc" aria-label="Contenido del dashboard">
       @if (blocks$ | async; as blocks) {
-        <app-panel-tags-bar />
+        <!-- <app-panel-tags-bar /> -->
 
         <app-block-list
           [blocks]="blocks"
@@ -43,7 +43,7 @@
 
     <footer class="dashboard-floating-bar" aria-label="Acciones del dashboard">
       <button type="button" class="dashboard-add-btn" (click)="dashboard.openBlockTypeDrawer()">
-        Add block
+        What will you create?
       </button>
     </footer>
   </div>
