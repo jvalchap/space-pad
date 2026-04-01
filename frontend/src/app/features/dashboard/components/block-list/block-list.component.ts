@@ -25,25 +25,15 @@ import {
 })
 export class BlockListComponent {
   readonly BlockType = BlockType;
-
   readonly blocks = input.required<Block[]>();
-
   readonly highlightQuery = input('');
-
   readonly reorderMode = input(false, { transform: booleanAttribute });
-
   readonly blocksReordered = output<BlocksReorderPayload>();
-
   readonly contentChange = output<BlockContentChangePayload>();
-
   readonly fieldKeydown = output<TextLikeFieldKeydownPayload>();
-
   readonly toggleItem = output<ChecklistTogglePayload>();
-
   readonly itemTextChange = output<ChecklistItemTextPayload>();
-
   readonly itemKeydown = output<ChecklistItemKeydownPayload>();
-
   readonly itemPriorityChange = output<ChecklistItemPriorityPayload>();
 
   asTextBlock(block: Block): TextBlock {

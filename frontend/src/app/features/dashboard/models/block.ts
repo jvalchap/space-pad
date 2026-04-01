@@ -110,22 +110,21 @@ export interface BlocksReorderPayload {
   readonly currentIndex: number;
 }
 
-// =============================================================================
-// TEMPLATES — presets de bloques (drawer / nuevo panel)
-// =============================================================================
 
-export enum PanelTemplateId {
+export enum BlockPresetId {
   Empty = 'empty',
+  SingleText = 'singleText',
+  SingleChecklist = 'singleChecklist',
   BrainDump = 'brainDump',
   Journal = 'journal',
   TaskList = 'taskList',
   Tracker = 'tracker',
 }
 
-export interface PanelTemplate {
-  readonly id: PanelTemplateId;
-  readonly name: string;
-  readonly description: string;
+export interface BlockPreset {
+  readonly id: BlockPresetId;
+  readonly label: string;
+  readonly hint: string;
   readonly createBlocks: () => Block[];
   readonly resolvePanelTitle: (nextDashboardNumber: number) => string;
 }

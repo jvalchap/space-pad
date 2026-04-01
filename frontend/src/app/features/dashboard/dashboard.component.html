@@ -52,6 +52,5 @@
 <app-bottom-drawer
   [open]="(dashboard.blockTypeDrawerOpen$ | async) ?? false"
   (closeDrawer)="dashboard.closeBlockTypeDrawer()"
-  (blockTypePicked)="dashboard.insertBlockTypeFromPicker($event)"
-  (templatePicked)="dashboard.appendBlocksFromTemplate($event)"
+  (blockPresetPicked)="dashboard.appendBlocksFromDrawerPreset($event)"
 />

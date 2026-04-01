@@ -1,9 +1,10 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable, Subject } from 'rxjs';
 import {
   Block,
   BlockFieldSnapshot,
   BlockFocusRequest,
+  BlockPresetId,
   BlockType,
   ChecklistBlock,
   ChecklistItem,
@@ -11,16 +12,16 @@ import {
   isChecklistItemPriority,
   TextBlock,
 } from '../models/block';
-import { PanelTemplateId } from '../models/block';
 import { DashboardWorkspaceState } from '../models/dashboard-page.model';
 import { Panel } from '../models/panel.model';
 import {
+  createBlocksForPreset,
   createChecklistBlock,
   createChecklistItem,
   createDefaultEmptyBlocks,
   createTextBlock,
+  resolvePanelTitleForPreset,
 } from './block-factory';
-import { TemplateService } from './template.service';
 
 function createDashboardPage(
   title: string,
@@ -47,8 +48,6 @@ function createInitialWorkspaceState(): DashboardWorkspaceState {
 
 @Injectable()
 export class DashboardService {
-  private readonly templateService = inject(TemplateService);
-
   private readonly workspaceSubject = new BehaviorSubject<DashboardWorkspaceState>(
     createInitialWorkspaceState(),
   );
@@ -100,11 +99,11 @@ export class DashboardService {
     this.workspaceSubject.next({ ...s, activePageId: pageId });
   }
 
-  addPage(templateId: PanelTemplateId = PanelTemplateId.Empty): void {
+  addPage(presetId: BlockPresetId = BlockPresetId.Empty): void {
     const s = this.getState();
     const nextNum = s.pages.length + 1;
-    const blocks = this.templateService.createBlocksForTemplate(templateId);
-    const title = this.templateService.resolvePanelTitle(templateId, nextNum);
+    const blocks = createBlocksForPreset(presetId);
+    const title = resolvePanelTitleForPreset(presetId, nextNum);
     const newPage = createDashboardPage(title, blocks);
     this.workspaceSubject.next({
       pages: [...s.pages, newPage],
@@ -166,14 +165,9 @@ export class DashboardService {
     this.blockTypeDrawerOpenSubject.next(false);
   }
 
-  insertBlockTypeFromPicker(type: BlockType): void {
+  appendBlocksFromDrawerPreset(presetId: BlockPresetId): void {
     this.closeBlockTypeDrawer();
-    this.insertBlockAtEndOfType(type);
-  }
-
-  appendBlocksFromTemplate(templateId: PanelTemplateId): void {
-    this.closeBlockTypeDrawer();
-    const extra = this.templateService.createBlocksForTemplate(templateId);
+    const extra = createBlocksForPreset(presetId);
     if (extra.length === 0) {
       return;
     }
@@ -181,20 +175,6 @@ export class DashboardService {
     this.setActivePageBlocks([...blocks, ...extra]);
     const last = extra[extra.length - 1];
     this.requestFocusAfterInsert(last);
-  }
-
-  private insertBlockAtEndOfType(type: BlockType): void {
-    const created = this.createBlockOfType(type);
-    const blocks = this.getActiveBlocks();
-    this.setActivePageBlocks([...blocks, created]);
-    this.requestFocusAfterInsert(created);
-  }
-
-  private createBlockOfType(type: BlockType): Block {
-    if (type === BlockType.Text) {
-      return createTextBlock('');
-    }
-    return createChecklistBlock([createChecklistItem('', false)]);
   }
 
   private requestFocusAfterInsert(block: Block): void {

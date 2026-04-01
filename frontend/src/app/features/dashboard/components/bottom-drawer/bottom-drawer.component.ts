@@ -1,13 +1,6 @@
-import {
-  Component,
-  booleanAttribute,
-  effect,
-  inject,
-  input,
-  output,
-} from '@angular/core';
-import { BlockType, PanelTemplateId } from '../../models/block';
-import { TemplateService } from '../../services/template.service';
+import { Component, booleanAttribute, effect, input, output } from '@angular/core';
+import { BlockPreset, BlockPresetId } from '../../models/block';
+import { BLOCK_DRAWER_PRESETS } from '../../services/block-factory';
 
 @Component({
   selector: 'app-bottom-drawer',
@@ -16,21 +9,10 @@ import { TemplateService } from '../../services/template.service';
   styleUrl: './bottom-drawer.component.scss',
 })
 export class BottomDrawerComponent {
-  readonly BlockType = BlockType;
-
-  private readonly templateService = inject(TemplateService);
-
-  readonly blockTemplates = this.templateService
-    .listTemplates()
-    .filter((template) => template.id !== PanelTemplateId.Empty);
-
+  readonly drawerPresets: readonly BlockPreset[] = BLOCK_DRAWER_PRESETS;
   readonly open = input(false, { transform: booleanAttribute });
-
   readonly closeDrawer = output<void>();
-
-  readonly blockTypePicked = output<BlockType>();
-
-  readonly templatePicked = output<PanelTemplateId>();
+  readonly blockPresetPicked = output<BlockPresetId>();
 
   constructor() {
     effect((onCleanup) => {
@@ -65,12 +47,8 @@ export class BottomDrawerComponent {
     });
   }
 
-  pickType(type: BlockType): void {
-    this.blockTypePicked.emit(type);
-  }
-
-  pickTemplate(templateId: PanelTemplateId): void {
-    this.templatePicked.emit(templateId);
+  pickPreset(preset: BlockPreset): void {
+    this.blockPresetPicked.emit(preset.id);
   }
 
   onBackdropClick(event: MouseEvent): void {

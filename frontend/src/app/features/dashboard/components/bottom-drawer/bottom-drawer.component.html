@@ -5,7 +5,6 @@
     tabindex="-1"
     (click)="onBackdropClick($event)"
   ></div>
-
   <div
     class="bottom-drawer__panel"
     role="dialog"
@@ -15,28 +14,15 @@
     <div class="bottom-drawer__handle" aria-hidden="true"></div>
     <h2 id="bottom-drawer-title" class="bottom-drawer__title">Insert block</h2>
     <ul class="bottom-drawer__options" role="list">
-      <li>
-        <button type="button" class="bottom-drawer__option" (click)="pickType(BlockType.Text)">
-          <span class="bottom-drawer__option-label">Text</span>
-          <span class="bottom-drawer__option-hint">Paragraph</span>
-        </button>
-      </li>
-      <li>
-        <button type="button" class="bottom-drawer__option" (click)="pickType(BlockType.Checklist)">
-          <span class="bottom-drawer__option-label">Checklist</span>
-          <span class="bottom-drawer__option-hint">Task list with checkboxes</span>
-        </button>
-      </li>
-
-      @for (template of blockTemplates; track template.id) {
+      @for (preset of drawerPresets; track preset.id) {
         <li>
           <button
             type="button"
             class="bottom-drawer__option"
-            (click)="pickTemplate(template.id)"
+            (click)="pickPreset(preset)"
           >
-            <span class="bottom-drawer__option-label">{{ template.name }}</span>
-            <span class="bottom-drawer__option-hint">{{ template.description }}</span>
+            <span class="bottom-drawer__option-label">{{ preset.label }}</span>
+            <span class="bottom-drawer__option-hint">{{ preset.hint }}</span>
           </button>
         </li>
       }
