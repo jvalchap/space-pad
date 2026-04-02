@@ -4,6 +4,18 @@
   <div class="dashboard-shell__main">
     <header class="dashboard-top-bar">
       <app-global-search-bar class="dashboard-top-bar__search" />
+      <div class="dashboard-top-bar__session">
+        <span class="dashboard-top-bar__user" aria-live="polite">{{
+          authService.user()?.username
+        }}</span>
+        <button
+          type="button"
+          class="dashboard-top-bar__logout"
+          (click)="authService.logout()"
+        >
+          Log out
+        </button>
+      </div>
     </header>
 
     <section

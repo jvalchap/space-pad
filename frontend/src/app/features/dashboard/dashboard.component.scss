@@ -24,6 +24,42 @@
   min-width: min(100%, 12rem);
 }
 
+.dashboard-top-bar__session {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.dashboard-top-bar__user {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--sp-color-text-secondary);
+  max-width: 9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dashboard-top-bar__logout {
+  appearance: none;
+  flex-shrink: 0;
+  border: 1px solid var(--sp-color-border);
+  border-radius: var(--sp-radius-sm);
+  padding: 0.35rem 0.65rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--sp-color-text-primary);
+  background: var(--sp-color-surface);
+  transition: background-color var(--sp-transition-fast), border-color var(--sp-transition-fast);
+
+  &:hover {
+    background: var(--sp-accent-hover);
+    border-color: color-mix(in srgb, var(--sp-color-accent) 35%, var(--sp-color-border));
+  }
+}
+
 .dashboard-shell__sidebar {
   flex: 0 0 260px;
   max-width: min(260px, 36vw);

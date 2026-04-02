@@ -10,6 +10,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { take } from 'rxjs';
 import { BlocksApiService } from '../../core/api/blocks-api.service';
+import { AuthService } from '../../core/auth/auth.service';
 import { BottomDrawerComponent } from './components/bottom-drawer/bottom-drawer.component';
 import { BlockListComponent } from './components/block-list/block-list.component';
 import { GlobalSearchBarComponent } from './components/global-search-bar/global-search-bar.component';
@@ -47,15 +48,11 @@ import { DashboardService } from './services/dashboard.service';
 })
 export class DashboardComponent {
   readonly dashboard = inject(DashboardService);
-
+  readonly authService = inject(AuthService);
   private readonly blocksApi = inject(BlocksApiService);
-
   private readonly destroyRef = inject(DestroyRef);
-
   private readonly platformId = inject(PLATFORM_ID);
-
   readonly blocks$ = this.dashboard.blocks$;
-
   readonly reorderMode = signal(false);
 
   constructor() {
