@@ -30,11 +30,40 @@ export class LoginComponent {
 
   submit(): void {
     this.errorMessage.set('');
-    this.isSubmitting.set(true);
     const registerMode = this.isRegisterMode();
+    const emailTrimmed = this.email.trim();
+    const passwordValue = this.password;
+    let usernameTrimmed = '';
+
+    if (registerMode) {
+      usernameTrimmed = this.username.trim();
+      if (!emailTrimmed || !usernameTrimmed || !passwordValue) {
+        this.errorMessage.set(
+          'Please fill in email, username, and password to create your account.',
+        );
+        return;
+      }
+      if (usernameTrimmed.length < 2) {
+        this.errorMessage.set('Username must be between 2 and 32 characters.');
+        return;
+      }
+      if (passwordValue.length < 8) {
+        this.errorMessage.set('Password must be at least 8 characters.');
+        return;
+      }
+    } else {
+      if (!emailTrimmed || !passwordValue) {
+        this.errorMessage.set(
+          'Please enter your email and password to sign in.',
+        );
+        return;
+      }
+    }
+
+    this.isSubmitting.set(true);
     const request$ = registerMode
-      ? this.authService.register(this.email.trim(), this.username.trim(), this.password)
-      : this.authService.login(this.email.trim(), this.password);
+      ? this.authService.register(emailTrimmed, usernameTrimmed, passwordValue)
+      : this.authService.login(emailTrimmed, passwordValue);
 
     request$.pipe(finalize(() => this.isSubmitting.set(false))).subscribe({
       next: () => {

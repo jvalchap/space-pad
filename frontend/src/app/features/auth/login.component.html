@@ -7,7 +7,7 @@
     <h1 id="login-title" class="login-page__title">
       {{ isRegisterMode() ? 'Create account' : 'Login' }}
     </h1>
-    <form class="login-page__form" (ngSubmit)="submit()">
+    <form class="login-page__form" novalidate (ngSubmit)="submit()">
       <label class="login-page__field">
         <span class="login-page__label">Email</span>
         <input
