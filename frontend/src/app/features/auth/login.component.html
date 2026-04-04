@@ -3,19 +3,10 @@
     <span class="login-page__brand">Space Pad</span>
     <app-theme-toggle />
   </header>
-
   <main class="login-page__card" aria-labelledby="login-title">
     <h1 id="login-title" class="login-page__title">
       {{ isRegisterMode() ? 'Create account' : 'Login' }}
     </h1>
-    <!-- <p class="login-page__subtitle">
-      {{
-        isRegisterMode()
-          ? 'Enter your data to save your workspace.'
-          : 'Login with your email and password.'
-      }}
-    </p> -->
-
     <form class="login-page__form" (ngSubmit)="submit()">
       <label class="login-page__field">
         <span class="login-page__label">Email</span>
