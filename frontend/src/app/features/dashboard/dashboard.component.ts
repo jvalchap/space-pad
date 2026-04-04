@@ -3,6 +3,7 @@ import {
   afterNextRender,
   Component,
   DestroyRef,
+  HostListener,
   inject,
   PLATFORM_ID,
   signal,
@@ -14,8 +15,6 @@ import { AuthService } from '../../core/auth/auth.service';
 import { BottomDrawerComponent } from './components/bottom-drawer/bottom-drawer.component';
 import { BlockListComponent } from './components/block-list/block-list.component';
 import { GlobalSearchBarComponent } from './components/global-search-bar/global-search-bar.component';
-import { PanelTagsBarComponent } from './components/panel-tags-bar/panel-tags-bar.component';
-import { ThemeToggleComponent } from './components/theme-toggle/theme-toggle.component';
 import { WorkspaceSidebarComponent } from './components/workspace-sidebar/workspace-sidebar.component';
 import {
   BlockContentChangePayload,
@@ -37,8 +36,6 @@ import { DashboardService } from './services/dashboard.service';
     AsyncPipe,
     WorkspaceSidebarComponent,
     GlobalSearchBarComponent,
-    ThemeToggleComponent,
-    PanelTagsBarComponent,
     BlockListComponent,
     BottomDrawerComponent,
   ],
@@ -55,6 +52,8 @@ export class DashboardComponent {
   readonly blocks$ = this.dashboard.blocks$;
   readonly reorderMode = signal(false);
 
+  readonly mobileSidebarOpen = signal(false);
+
   constructor() {
     this.dashboard.focusRequest$.pipe(takeUntilDestroyed()).subscribe((request) => {
       queueMicrotask(() => this.focusDashboardTarget(request));
@@ -68,7 +67,32 @@ export class DashboardComponent {
         .getBlocks()
         .pipe(take(1), takeUntilDestroyed(this.destroyRef))
         .subscribe((blocks) => this.dashboard.loadBlocksFromApi(blocks));
+
+      const syncMobileSidebarToViewport = (): void => {
+        if (window.matchMedia('(min-width: 769px)').matches) {
+          this.mobileSidebarOpen.set(false);
+        }
+      };
+      window.addEventListener('resize', syncMobileSidebarToViewport);
+      this.destroyRef.onDestroy(() =>
+        window.removeEventListener('resize', syncMobileSidebarToViewport),
+      );
     });
+  }
+
+  toggleMobileSidebar(): void {
+    this.mobileSidebarOpen.update((open) => !open);
+  }
+
+  closeMobileSidebar(): void {
+    this.mobileSidebarOpen.set(false);
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeCloseMobileSidebar(): void {
+    if (this.mobileSidebarOpen()) {
+      this.closeMobileSidebar();
+    }
   }
 
   toggleReorderMode(): void {

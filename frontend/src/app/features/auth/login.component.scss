@@ -142,3 +142,41 @@ html.dark .login-page__error {
     filter: brightness(1.1);
   }
 }
+
+@media (max-width: 768px) {
+  .login-page {
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: max(1.25rem, env(safe-area-inset-top)) max(1.25rem, env(safe-area-inset-right))
+      max(2rem, env(safe-area-inset-bottom)) max(1.25rem, env(safe-area-inset-left));
+  }
+
+  .login-page__header {
+    position: static;
+    margin-bottom: 2rem;
+    padding: 0;
+  }
+
+  .login-page__card {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .login-page__title {
+    font-size: 1.625rem;
+  }
+
+  .login-page__subtitle {
+    font-size: 0.9375rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .login-page__form {
+    gap: 1.125rem;
+  }
+}

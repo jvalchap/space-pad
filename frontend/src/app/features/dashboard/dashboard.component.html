@@ -1,8 +1,31 @@
-<div class="dashboard-shell">
-  <app-workspace-sidebar class="dashboard-shell__sidebar" />
+<div
+  class="dashboard-shell"
+  [class.dashboard-shell--sidebar-open]="mobileSidebarOpen()"
+>
+  <div
+    class="dashboard-shell__nav-backdrop"
+    [class.dashboard-shell__nav-backdrop--open]="mobileSidebarOpen()"
+    (click)="closeMobileSidebar()"
+    aria-hidden="true"
+  ></div>
+
+  <app-workspace-sidebar
+    class="dashboard-shell__sidebar"
+    (mobileCloseRequest)="closeMobileSidebar()"
+  />
 
   <div class="dashboard-shell__main">
     <header class="dashboard-top-bar">
+      <button
+        type="button"
+        class="dashboard-top-bar__menu"
+        [attr.aria-expanded]="mobileSidebarOpen()"
+        aria-controls="workspace-navigation"
+        [attr.aria-label]="mobileSidebarOpen() ? 'Close navigation' : 'Open navigation'"
+        (click)="toggleMobileSidebar()"
+      >
+        <span class="dashboard-top-bar__menu-bars" aria-hidden="true"></span>
+      </button>
       <app-global-search-bar class="dashboard-top-bar__search" />
       <div class="dashboard-top-bar__session">
         <span class="dashboard-top-bar__user" aria-live="polite">{{

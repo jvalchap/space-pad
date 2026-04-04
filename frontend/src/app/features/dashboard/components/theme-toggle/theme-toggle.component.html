@@ -7,5 +7,9 @@
   "
   (click)="onClick()"
 >
-  {{ theme.mode() === ThemeMode.Dark ? 'Light mode' : 'Dark mode' }}
+  @if (theme.mode() === ThemeMode.Dark) {
+    <svg lucideSun [size]="20" [strokeWidth]="2" class="theme-toggle__icon" aria-hidden="true"></svg>
+  } @else {
+    <svg lucideMoon [size]="20" [strokeWidth]="2" class="theme-toggle__icon" aria-hidden="true"></svg>
+  }
 </button>

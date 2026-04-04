@@ -1,11 +1,14 @@
 .theme-toggle {
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   appearance: none;
   border: 1px solid color-mix(in srgb, var(--sp-color-border) 80%, transparent);
   border-radius: 999px;
-  padding: 0.4rem 0.85rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
+  padding: 0;
+  width: 2.5rem;
+  height: 2.5rem;
   cursor: pointer;
   color: var(--sp-color-text-primary);
   background: var(--sp-color-surface);
@@ -14,6 +17,12 @@
     background var(--sp-transition-fast),
     border-color var(--sp-transition-fast),
     color var(--sp-transition-fast);
+}
+
+.theme-toggle__icon {
+  display: block;
+  flex-shrink: 0;
+  color: inherit;
 }
 
 .theme-toggle:hover {

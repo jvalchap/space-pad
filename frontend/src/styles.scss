@@ -116,6 +116,12 @@ body {
     color var(--sp-transition);
 }
 
+@media (max-width: 768px) {
+  body {
+    overflow-x: clip;
+  }
+}
+
 button,
 input,
 select,

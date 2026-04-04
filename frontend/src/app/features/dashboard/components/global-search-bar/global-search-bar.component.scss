@@ -125,3 +125,15 @@
   font: inherit;
   font-weight: 600;
 }
+
+@media (max-width: 768px) {
+  .global-search__input {
+    font-size: 1rem;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .global-search__results {
+    max-height: min(50dvh, 360px);
+  }
+}

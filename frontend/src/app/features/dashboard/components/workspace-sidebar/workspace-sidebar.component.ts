@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, output } from '@angular/core';
 import { DashboardService } from '../../services/dashboard.service';
 import { ThemeToggleComponent } from '../theme-toggle/theme-toggle.component';
 
@@ -14,4 +14,17 @@ export class WorkspaceSidebarComponent {
   readonly dashboard = inject(DashboardService);
 
   readonly workspace$ = this.dashboard.workspace$;
+
+  /** Emitted after a navigation action so the parent can close the mobile drawer. */
+  readonly mobileCloseRequest = output<void>();
+
+  selectPageAndCloseMobile(pageId: string): void {
+    this.dashboard.selectPage(pageId);
+    this.mobileCloseRequest.emit();
+  }
+
+  addPageAndCloseMobile(): void {
+    this.dashboard.addPage();
+    this.mobileCloseRequest.emit();
+  }
 }

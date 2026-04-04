@@ -1,10 +1,12 @@
 import { Component, inject } from '@angular/core';
+import { LucideMoon, LucideSun } from '@lucide/angular';
 import { ThemeMode } from '../../../../core/theme/theme-mode.enum';
 import { ThemeService } from '../../../../core/theme/theme.service';
 
 @Component({
   selector: 'app-theme-toggle',
   standalone: true,
+  imports: [LucideMoon, LucideSun],
   templateUrl: './theme-toggle.component.html',
   styleUrl: './theme-toggle.component.scss',
 })

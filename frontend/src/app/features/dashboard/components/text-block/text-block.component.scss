@@ -38,3 +38,11 @@
 .text-block__field:focus-visible {
   outline: 2px solid color-mix(in srgb, var(--dashboard-accent) 45%, transparent);
 }
+
+@media (max-width: 768px) {
+  .text-block__field {
+    font-size: 1rem;
+    padding: 0.35rem 0.2rem;
+    line-height: 1.55;
+  }
+}

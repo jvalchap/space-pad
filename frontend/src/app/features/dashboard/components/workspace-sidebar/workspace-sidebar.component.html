@@ -1,4 +1,8 @@
-<aside class="workspace-sidebar" aria-label="Tus dashboards">
+<aside
+  id="workspace-navigation"
+  class="workspace-sidebar"
+  aria-label="Tus dashboards"
+>
   <div class="workspace-sidebar__brand">
     <span class="workspace-sidebar__logo">Space Pad</span>
     <app-theme-toggle />
@@ -15,7 +19,7 @@
               type="button"
               class="workspace-sidebar__item"
               [class.workspace-sidebar__item--active]="page.id === ws.activePageId"
-              (click)="dashboard.selectPage(page.id)"
+              (click)="selectPageAndCloseMobile(page.id)"
             >
               <span class="workspace-sidebar__item-body">
                 <span class="workspace-sidebar__item-title">{{ page.title }}</span>
@@ -34,7 +38,7 @@
     </nav>
   }
 
-  <button type="button" class="workspace-sidebar__new" (click)="dashboard.addPage()">
+  <button type="button" class="workspace-sidebar__new" (click)="addPageAndCloseMobile()">
     + New dashboard
   </button>
 </aside>

@@ -142,3 +142,17 @@
 .workspace-sidebar__new:focus-visible {
   outline: 2px solid color-mix(in srgb, var(--dashboard-accent) 45%, transparent);
 }
+
+@media (max-width: 768px) {
+  .workspace-sidebar {
+    height: 100%;
+    padding-top: max(0.75rem, env(safe-area-inset-top));
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+    padding-left: max(0.5rem, env(safe-area-inset-left));
+    border-right: none;
+  }
+
+  :host app-theme-toggle {
+    display: none;
+  }
+}
