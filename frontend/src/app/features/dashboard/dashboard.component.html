@@ -13,8 +13,7 @@
     class="dashboard-shell__sidebar"
     (mobileCloseRequest)="closeMobileSidebar()"
   />
-
-  <div class="dashboard-shell__main">
+  <div class="dashboard-shell__main-container">
     <header class="dashboard-top-bar">
       <button
         type="button"
@@ -28,58 +27,50 @@
       </button>
       <app-global-search-bar class="dashboard-top-bar__search" />
       <div class="dashboard-top-bar__session">
-        <span class="dashboard-top-bar__user" aria-live="polite">{{
-          authService.user()?.username
-        }}</span>
-        <button
-          type="button"
-          class="dashboard-top-bar__logout"
-          (click)="authService.logout()"
-        >
-          Log out
-        </button>
+        <app-user-menu />
       </div>
     </header>
-
-    <section
-    class="dashboard-blocks-toolbar"
-    aria-label="Blocks organization"
-    >
-      <button
-        type="button"
-        class="dashboard-blocks-toolbar__btn"
-        [class.dashboard-blocks-toolbar__btn--active]="reorderMode()"
-        [attr.aria-pressed]="reorderMode()"
-        (click)="toggleReorderMode()"
+    <div class="dashboard-shell__main">
+      <section
+      class="dashboard-blocks-toolbar"
+      aria-label="Blocks organization"
       >
-        {{ reorderMode() ? 'Done' : 'Reorder blocks' }}
-      </button>
-    </section>
+        <button
+          type="button"
+          class="dashboard-blocks-toolbar__btn"
+          [class.dashboard-blocks-toolbar__btn--active]="reorderMode()"
+          [attr.aria-pressed]="reorderMode()"
+          (click)="toggleReorderMode()"
+        >
+          {{ reorderMode() ? 'Done' : 'Reorder blocks' }}
+        </button>
+      </section>
 
-    <main class="dashboard-doc" aria-label="Dashboard content">
-      @if (blocks$ | async; as blocks) {
-        <!-- <app-panel-tags-bar /> -->
+      <main class="dashboard-doc" aria-label="Dashboard content">
+        @if (blocks$ | async; as blocks) {
+          <!-- <app-panel-tags-bar /> -->
 
-        <app-block-list
-          [blocks]="blocks"
-          [highlightQuery]="(dashboard.globalSearchHighlight$ | async) ?? ''"
-          [reorderMode]="reorderMode()"
-          (blocksReordered)="onBlocksReordered($event)"
-          (contentChange)="onTextLikeContent($event)"
-          (fieldKeydown)="onTextLikeFieldKeydown($event)"
-          (toggleItem)="onChecklistToggle($event)"
-          (itemTextChange)="onChecklistItemText($event)"
-          (itemKeydown)="onChecklistItemKeydown($event)"
-          (itemPriorityChange)="onChecklistItemPriority($event)"
-        />
-      }
-    </main>
+          <app-block-list
+            [blocks]="blocks"
+            [highlightQuery]="(dashboard.globalSearchHighlight$ | async) ?? ''"
+            [reorderMode]="reorderMode()"
+            (blocksReordered)="onBlocksReordered($event)"
+            (contentChange)="onTextLikeContent($event)"
+            (fieldKeydown)="onTextLikeFieldKeydown($event)"
+            (toggleItem)="onChecklistToggle($event)"
+            (itemTextChange)="onChecklistItemText($event)"
+            (itemKeydown)="onChecklistItemKeydown($event)"
+            (itemPriorityChange)="onChecklistItemPriority($event)"
+          />
+        }
+      </main>
 
-    <footer class="dashboard-floating-bar" aria-label="Block creation">
-      <button type="button" class="dashboard-add-btn" (click)="dashboard.openBlockTypeDrawer()">
-        What will you create?
-      </button>
-    </footer>
+      <footer class="dashboard-floating-bar" aria-label="Block creation">
+        <button type="button" class="dashboard-add-btn" (click)="dashboard.openBlockTypeDrawer()">
+          What will you create?
+        </button>
+      </footer>
+    </div>
   </div>
 </div>
 

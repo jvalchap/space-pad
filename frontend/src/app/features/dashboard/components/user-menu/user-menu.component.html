@@ -1,0 +1,48 @@
+<div class="user-menu">
+  <button
+    type="button"
+    class="user-menu__trigger"
+    [attr.aria-expanded]="menuOpen()"
+    aria-haspopup="true"
+    aria-controls="user-menu-panel"
+    aria-label="User menu"
+    (click)="toggleMenu($event)"
+  >
+    <svg
+      lucideUser
+      [size]="20"
+      [strokeWidth]="2"
+      class="user-menu__trigger-icon"
+      aria-hidden="true"
+    ></svg>
+  </button>
+
+  @if (menuOpen()) {
+    <div
+      id="user-menu-panel"
+      class="user-menu__panel"
+      role="menu"
+      (click)="$event.stopPropagation()"
+    >
+      @if (authService.user(); as user) {
+        <div class="user-menu__header" role="presentation">
+          <span class="user-menu__name">{{ user.username }}</span>
+        </div>
+      }
+
+      <div class="user-menu__row" role="presentation">
+        <span class="user-menu__row-label" id="user-menu-theme-label">Theme</span>
+        <app-theme-toggle aria-labelledby="user-menu-theme-label" />
+      </div>
+
+      <button
+        type="button"
+        class="user-menu__item"
+        role="menuitem"
+        (click)="logout()"
+      >
+        Log out
+      </button>
+    </div>
+  }
+</div>

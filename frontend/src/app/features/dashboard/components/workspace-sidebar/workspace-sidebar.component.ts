@@ -1,12 +1,11 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject, output } from '@angular/core';
 import { DashboardService } from '../../services/dashboard.service';
-import { ThemeToggleComponent } from '../theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-workspace-sidebar',
   standalone: true,
-  imports: [AsyncPipe, ThemeToggleComponent],
+  imports: [AsyncPipe],
   templateUrl: './workspace-sidebar.component.html',
   styleUrl: './workspace-sidebar.component.scss',
 })

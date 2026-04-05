@@ -1,0 +1,115 @@
+:host {
+  display: block;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.user-menu__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--sp-color-border);
+  border-radius: 999px;
+  background: var(--sp-color-surface);
+  color: var(--sp-color-text-primary);
+  cursor: pointer;
+  transition:
+    background var(--sp-transition-fast),
+    border-color var(--sp-transition-fast),
+    box-shadow var(--sp-transition-fast);
+}
+
+.user-menu__trigger:hover {
+  background: var(--sp-accent-hover);
+  border-color: color-mix(in srgb, var(--sp-color-accent) 35%, var(--sp-color-border));
+}
+
+.user-menu__trigger:focus-visible {
+  outline: 2px solid var(--sp-focus-ring);
+  outline-offset: 2px;
+}
+
+.user-menu__trigger-icon {
+  display: block;
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.user-menu__panel {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 320;
+  min-width: 12rem;
+  padding: 0.35rem;
+  border-radius: var(--sp-radius-md);
+  border: 1px solid var(--sp-color-border);
+  background: var(--sp-color-surface);
+  box-shadow: var(--sp-shadow-lg);
+}
+
+.user-menu__header {
+  padding: 0.5rem 0.65rem 0.4rem;
+  border-bottom: 1px solid var(--sp-color-border);
+  margin-bottom: 0.35rem;
+}
+
+.user-menu__name {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--sp-color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 14rem;
+}
+
+.user-menu__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.45rem 0.5rem 0.5rem;
+}
+
+.user-menu__row-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--sp-color-text-secondary);
+}
+
+.user-menu__row :is(.theme-toggle) {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.user-menu__item {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0.55rem 0.65rem;
+  border: none;
+  border-radius: var(--sp-radius-sm);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  color: var(--sp-color-text-primary);
+  background: transparent;
+  transition: background var(--sp-transition-fast);
+}
+
+.user-menu__item:hover {
+  background: var(--sp-accent-hover);
+}
+
+.user-menu__item:focus-visible {
+  outline: 2px solid var(--sp-focus-ring);
+  outline-offset: -2px;
+}

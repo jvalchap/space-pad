@@ -1,5 +1,6 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { LucideSearch } from '@lucide/angular';
 import {
   GlobalSearchHit,
   GlobalSearchHitSource,
@@ -11,7 +12,7 @@ import { splitTextHighlightSegments } from '../../utils/text-highlight.util';
 @Component({
   selector: 'app-global-search-bar',
   standalone: true,
-  imports: [AsyncPipe],
+  imports: [AsyncPipe, LucideSearch],
   templateUrl: './global-search-bar.component.html',
   styleUrl: './global-search-bar.component.scss',
 })
