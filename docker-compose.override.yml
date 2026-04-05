@@ -1,0 +1,41 @@
+# Merged automatically with docker-compose.yml — run:  docker compose up --build
+# Bind-mounts ./backend and ./frontend so edits on the host reload in the containers.
+# For production-style stack without mounts:  docker compose -f docker-compose.yml up --build
+#
+# If you change package.json / lockfiles:
+#   docker compose run --rm backend npm ci
+#   docker compose run --rm frontend npm ci
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./backend:/app
+      - spacepad_backend_node_modules:/app/node_modules
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+    command:
+      - sh
+      - -c
+      - |
+        if [ ! -d node_modules/@nestjs ]; then npm ci; fi
+        npx prisma generate
+        npx prisma migrate deploy
+        exec npm run start:dev
+
+  frontend:
+    volumes:
+      - ./frontend:/app
+      - spacepad_frontend_node_modules:/app/node_modules
+    command:
+      - sh
+      - -c
+      - |
+        if [ ! -d node_modules/@angular ]; then npm ci; fi
+        exec npm run start -- --host 0.0.0.0 --port 4200 --poll 2000
+
+volumes:
+  spacepad_backend_node_modules:
+  spacepad_frontend_node_modules:
