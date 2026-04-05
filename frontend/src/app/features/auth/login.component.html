@@ -1,75 +1,75 @@
 <div class="login-page">
-  <header class="login-page__header">
-    <span class="login-page__brand">Space Pad</span>
-    <app-theme-toggle />
-  </header>
-  <main class="login-page__card" aria-labelledby="login-title">
-    <h1 id="login-title" class="login-page__title">
-      {{ isRegisterMode() ? 'Create account' : 'Login' }}
-    </h1>
-    <form class="login-page__form" novalidate (ngSubmit)="submit()">
-      <label class="login-page__field">
-        <span class="login-page__label">Email</span>
-        <input
-          class="login-page__input"
-          type="email"
-          name="email"
-          [(ngModel)]="email"
-          required
-          autocomplete="email"
-        />
-      </label>
+	<header class="login-page__header">
+		<span class="login-page__brand">Space Pad</span>
+		<app-theme-toggle />
+	</header>
+	<main class="login-page__card" aria-labelledby="login-title">
+		<h1 id="login-title" class="login-page__title">
+			{{ isRegisterMode() ? 'Create account' : 'Login' }}
+		</h1>
+		<form class="login-page__form" novalidate (ngSubmit)="submit()">
+			<label class="login-page__field">
+				<span class="login-page__label">Email</span>
+				<input
+					class="login-page__input"
+					type="email"
+					name="email"
+					[(ngModel)]="email"
+					required
+					autocomplete="email"
+				/>
+			</label>
 
-      @if (isRegisterMode()) {
-        <label class="login-page__field">
-          <span class="login-page__label">Username</span>
-          <input
-            class="login-page__input"
-            type="text"
-            name="username"
-            [(ngModel)]="username"
-            required
-            minlength="2"
-            maxlength="32"
-            autocomplete="username"
-          />
-        </label>
-      }
+			@if (isRegisterMode()) {
+				<label class="login-page__field">
+					<span class="login-page__label">Username</span>
+					<input
+						class="login-page__input"
+						type="text"
+						name="username"
+						[(ngModel)]="username"
+						required
+						minlength="2"
+						maxlength="32"
+						autocomplete="username"
+					/>
+				</label>
+			}
 
-      <label class="login-page__field">
-        <span class="login-page__label">Password</span>
-        <input
-          class="login-page__input"
-          type="password"
-          name="password"
-          [(ngModel)]="password"
-          required
-          [attr.minlength]="isRegisterMode() ? 8 : null"
-          [attr.autocomplete]="isRegisterMode() ? 'new-password' : 'current-password'"
-        />
-      </label>
+			<label class="login-page__field">
+				<span class="login-page__label">Password</span>
+				<input
+					class="login-page__input"
+					type="password"
+					name="password"
+					[(ngModel)]="password"
+					required
+					[attr.minlength]="isRegisterMode() ? 8 : null"
+					[attr.autocomplete]="isRegisterMode() ? 'new-password' : 'current-password'"
+				/>
+			</label>
 
-      @if (errorMessage().length > 0) {
-        <p class="login-page__error" role="alert">{{ errorMessage() }}</p>
-      }
+			@if (errorMessage().length > 0) {
+				<p class="login-page__error" role="alert">{{ errorMessage() }}</p>
+			}
 
-      <button
-        type="submit"
-        class="login-page__submit"
-        [disabled]="isSubmitting()"
-      >
-        {{ isSubmitting() ? 'Wait...' : isRegisterMode() ? 'Register' : 'Login' }}
-      </button>
-    </form>
+			<button
+				type="submit"
+				class="login-page__submit"
+				[disabled]="isSubmitting()"
+			>
+				{{ isSubmitting() ? 'Wait...' : isRegisterMode() ? 'Register' : 'Login' }}
+			</button>
+		</form>
 
-    <p class="login-page__switch">
-      <button type="button" class="login-page__link" (click)="toggleMode()">
-        {{
-          isRegisterMode()
-            ? 'Already have an account? Login'
-            : 'No account yet? Register!'
-        }}
-      </button>
-    </p>
-  </main>
+		<p class="login-page__switch">
+			<button type="button" class="login-page__link" (click)="toggleMode()">
+				{{
+					isRegisterMode()
+						? 'Already have an account? Login'
+						: 'No account yet? Register!'
+				}}
+			</button>
+		</p>
+	</main>
 </div>
