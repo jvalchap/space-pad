@@ -19,7 +19,6 @@ import {
   createChecklistBlock,
   createChecklistItem,
   createDefaultEmptyBlocks,
-  createTextBlock,
   resolvePanelTitleForPreset,
 } from './block-factory';
 
@@ -228,11 +227,6 @@ export class DashboardService {
     if (!block || block.type === BlockType.Checklist) {
       return;
     }
-    if (this.isSplitLineKey(event)) {
-      event.preventDefault();
-      this.splitBlockAtCaret(blockId, snapshot);
-      return;
-    }
     if (event.key === 'Backspace') {
       this.handleBackspaceOnEmptyBlock(blockId, snapshot, event);
     }
@@ -376,26 +370,6 @@ export class DashboardService {
 
   private isSplitLineKey(event: KeyboardEvent): boolean {
     return event.key === 'Enter' && !event.shiftKey;
-  }
-
-  private splitBlockAtCaret(blockId: string, snapshot: BlockFieldSnapshot): void {
-    const before = snapshot.value.slice(0, snapshot.selectionStart);
-    const after = snapshot.value.slice(snapshot.selectionEnd);
-    this.updateBlockContent(blockId, before);
-    const newId = this.insertTextBlockAfter(blockId, after);
-    this.requestFocus(newId);
-  }
-
-  private insertTextBlockAfter(afterId: string, initialContent: string): string {
-    const blocks = this.getActiveBlocks();
-    const index = blocks.findIndex((b) => b.id === afterId);
-    if (index === -1) {
-      return afterId;
-    }
-    const inserted = createTextBlock(initialContent);
-    const next = [...blocks.slice(0, index + 1), inserted, ...blocks.slice(index + 1)];
-    this.setActivePageBlocks(next);
-    return inserted.id;
   }
 
   private handleBackspaceOnEmptyBlock(

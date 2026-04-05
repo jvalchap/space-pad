@@ -6,6 +6,29 @@
   color: var(--sp-color-text-primary);
 }
 
+/* Desktop: viewport-height shell so the sidebar stays put; main column scrolls. */
+@media (min-width: 769px) {
+  .dashboard-shell {
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+  }
+
+  .dashboard-shell__sidebar {
+    align-self: stretch;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .dashboard-shell__main-container {
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 .dashboard-shell__nav-backdrop {
   display: none;
 }
@@ -102,8 +125,6 @@
 .dashboard-shell__sidebar {
   flex: 0 0 260px;
   max-width: 260px;
-  height: 100vh;
-  align-self: stretch;
 }
 
 .dashboard-shell__main-container {
@@ -112,22 +133,30 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
+  scroll-padding-bottom: max(5.5rem, calc(3.5rem + env(safe-area-inset-bottom)));
 }
 
+/* Grows with content so the scroll parent (main-container) gets full scroll height. */
 .dashboard-shell__main {
-  flex: 1;
+  flex: 0 0 auto;
   min-width: 0;
-  min-height: 0;
   display: flex;
   flex-direction: column;
-  padding-bottom: max(5.5rem, calc(4.5rem + env(safe-area-inset-bottom)));
   box-sizing: border-box;
 }
 
+/* Space so the last block can scroll above the fixed “What will you create?” pill. */
 .dashboard-doc {
+  --dashboard-floating-clearance: max(
+    5.5rem,
+    calc(1.25rem + 3rem + 0.85rem + env(safe-area-inset-bottom))
+  );
+
   max-width: 90%;
   margin: 0 auto;
   width: 100%;
+  padding-bottom: var(--dashboard-floating-clearance);
+  box-sizing: border-box;
 }
 
 .dashboard-blocks-toolbar {
@@ -187,6 +216,7 @@
   left: 50%;
   bottom: max(1.25rem, env(safe-area-inset-bottom));
   transform: translateX(-50%);
+  z-index: 40;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -251,7 +281,8 @@
   }
 
   .dashboard-shell__main {
-    padding: 0 max(1rem, env(safe-area-inset-left)) 5.25rem max(1rem, env(safe-area-inset-right));
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
   }
 
   .dashboard-top-bar {
@@ -268,6 +299,10 @@
 
   .dashboard-doc {
     max-width: none;
+    --dashboard-floating-clearance: max(
+      6rem,
+      calc(1rem + 3.5rem + 1rem + env(safe-area-inset-bottom))
+    );
   }
 
   .dashboard-blocks-toolbar {
