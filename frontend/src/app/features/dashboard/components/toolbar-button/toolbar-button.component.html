@@ -1,0 +1,12 @@
+<button
+  type="button"
+  class="toolbar-button"
+  [class.toolbar-button--active]="active()"
+  [disabled]="disabled()"
+  [attr.aria-pressed]="ariaPressed() === undefined ? null : ariaPressed()"
+>
+  <span class="toolbar-button__icon" aria-hidden="true">
+    <ng-content select="[toolbarIcon]" />
+  </span>
+  <span class="toolbar-button__label">{{ label() }}</span>
+</button>

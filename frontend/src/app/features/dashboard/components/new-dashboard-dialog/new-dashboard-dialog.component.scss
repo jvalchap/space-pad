@@ -1,0 +1,157 @@
+.new-dash-dialog__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgb(var(--sp-rgb-backdrop) / 45%);
+  backdrop-filter: blur(6px);
+  box-sizing: border-box;
+}
+
+.new-dash-dialog {
+  width: min(26rem, 100%);
+  border-radius: 14px;
+  padding: 1.35rem 1.35rem 1.15rem;
+  background: var(--sp-color-surface);
+  border: 1px solid var(--sp-color-border);
+  box-shadow: var(--sp-shadow-lg);
+  box-sizing: border-box;
+}
+
+.new-dash-dialog__title {
+  margin: 0 0 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.new-dash-dialog__label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.new-dash-dialog__label-text {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--sp-color-text-secondary);
+}
+
+.new-dash-dialog__input {
+  border-radius: 10px;
+  border: 1px solid var(--sp-color-border);
+  padding: 0.5rem 0.65rem;
+  font: inherit;
+  background: var(--sp-color-page);
+  color: var(--sp-color-text-primary);
+}
+
+.new-dash-dialog__input:focus-visible {
+  outline: 2px solid var(--sp-focus-ring);
+  outline-offset: 1px;
+}
+
+.new-dash-dialog__options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-bottom: 1.15rem;
+}
+
+.new-dash-dialog__option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  text-align: left;
+  padding: 0.75rem 0.8rem;
+  margin: 0;
+  border-radius: 12px;
+  border: 1px solid var(--sp-color-border);
+  background: color-mix(in srgb, var(--sp-color-surface) 88%, transparent);
+  cursor: pointer;
+  color: inherit;
+  transition:
+    background var(--sp-transition-fast),
+    border-color var(--sp-transition-fast);
+}
+
+.new-dash-dialog__option:hover {
+  background: var(--sp-accent-hover);
+}
+
+.new-dash-dialog__option:focus-visible {
+  outline: 2px solid var(--sp-focus-ring);
+  outline-offset: 2px;
+}
+
+.new-dash-dialog__option--active {
+  border-color: color-mix(in srgb, var(--sp-color-accent) 42%, transparent);
+  background: color-mix(in srgb, var(--sp-color-accent) 12%, var(--sp-color-surface));
+}
+
+.new-dash-dialog__option-icon {
+  flex-shrink: 0;
+  display: flex;
+  color: color-mix(in srgb, var(--sp-color-text-primary) 72%, transparent);
+}
+
+.new-dash-dialog__option-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.new-dash-dialog__option-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.new-dash-dialog__option-desc {
+  font-size: 0.8125rem;
+  color: var(--sp-color-text-secondary);
+  line-height: 1.35;
+}
+
+.new-dash-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.new-dash-dialog__btn {
+  border-radius: 10px;
+  padding: 0.45rem 0.9rem;
+  font: inherit;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.new-dash-dialog__btn--ghost {
+  background: transparent;
+  color: var(--sp-color-text-secondary);
+}
+
+.new-dash-dialog__btn--ghost:hover {
+  background: var(--sp-accent-hover);
+}
+
+.new-dash-dialog__btn--primary {
+  background: color-mix(in srgb, var(--sp-color-accent) 22%, var(--sp-color-surface));
+  border-color: color-mix(in srgb, var(--sp-color-accent) 38%, transparent);
+  color: var(--sp-color-text-primary);
+}
+
+.new-dash-dialog__btn--primary:hover {
+  background: color-mix(in srgb, var(--sp-color-accent) 30%, var(--sp-color-surface));
+}
+
+.new-dash-dialog__btn:focus-visible {
+  outline: 2px solid var(--sp-focus-ring);
+  outline-offset: 2px;
+}

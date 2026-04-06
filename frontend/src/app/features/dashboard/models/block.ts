@@ -7,10 +7,29 @@
 export enum BlockType {
   Text = 'text',
   Checklist = 'checklist',
+  Card = 'card',
 }
 
 export function isBlockType(value: unknown): value is BlockType {
-  return value === BlockType.Text || value === BlockType.Checklist;
+  return (
+    value === BlockType.Text ||
+    value === BlockType.Checklist ||
+    value === BlockType.Card
+  );
+}
+
+export enum BoardColumnId {
+  Todo = 'todo',
+  Doing = 'doing',
+  Done = 'done',
+}
+
+export function isBoardColumnId(value: unknown): value is BoardColumnId {
+  return (
+    value === BoardColumnId.Todo ||
+    value === BoardColumnId.Doing ||
+    value === BoardColumnId.Done
+  );
 }
 
 export enum ChecklistItemPriority {
@@ -51,7 +70,14 @@ export interface ChecklistBlock {
   readonly title?: string;
 }
 
-export type Block = TextBlock | ChecklistBlock;
+export interface CardBlock {
+  readonly id: string;
+  readonly type: BlockType.Card;
+  readonly content: string;
+  readonly column: BoardColumnId;
+}
+
+export type Block = TextBlock | ChecklistBlock | CardBlock;
 
 // =============================================================================
 // UI — component ↔ DashboardService (payloads, focus, snapshots)

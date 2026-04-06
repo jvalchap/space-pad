@@ -33,6 +33,18 @@ function collectBlockHits(
   qLower: string,
   hits: GlobalSearchHit[],
 ): void {
+  if (block.type === BlockType.Card) {
+    if (block.content.toLowerCase().includes(qLower)) {
+      hits.push({
+        panelId,
+        panelTitle,
+        snippet: buildSnippet(block.content, query),
+        source: GlobalSearchHitSource.BlockContent,
+        blockId: block.id,
+      });
+    }
+    return;
+  }
   if (block.type === BlockType.Text) {
     const blob = `${block.title ?? ''}\n${block.content}`.toLowerCase();
     if (blob.includes(qLower)) {
@@ -49,31 +61,33 @@ function collectBlockHits(
     }
     return;
   }
-  const headBlob = `${block.title ?? ''}\n${block.content}`.toLowerCase();
-  if (headBlob.includes(qLower)) {
-    const snippetSource = block.content.trim()
-      ? block.content
-      : (block.title ?? '');
-    hits.push({
-      panelId,
-      panelTitle,
-      snippet: buildSnippet(snippetSource, query),
-      source: GlobalSearchHitSource.BlockContent,
-      blockId: block.id,
-    });
-  }
-  block.items.forEach((item, checklistItemIndex) => {
-    if (item.text.toLowerCase().includes(qLower)) {
+  if (block.type === BlockType.Checklist) {
+    const headBlob = `${block.title ?? ''}\n${block.content}`.toLowerCase();
+    if (headBlob.includes(qLower)) {
+      const snippetSource = block.content.trim()
+        ? block.content
+        : (block.title ?? '');
       hits.push({
         panelId,
         panelTitle,
-        snippet: buildSnippet(item.text, query),
+        snippet: buildSnippet(snippetSource, query),
         source: GlobalSearchHitSource.BlockContent,
         blockId: block.id,
-        checklistItemIndex,
       });
     }
-  });
+    block.items.forEach((item, checklistItemIndex) => {
+      if (item.text.toLowerCase().includes(qLower)) {
+        hits.push({
+          panelId,
+          panelTitle,
+          snippet: buildSnippet(item.text, query),
+          source: GlobalSearchHitSource.BlockContent,
+          blockId: block.id,
+          checklistItemIndex,
+        });
+      }
+    });
+  }
 }
 
 export function computeGlobalSearchHits(

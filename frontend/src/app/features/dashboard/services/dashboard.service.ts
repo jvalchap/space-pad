@@ -1,17 +1,33 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable, Subject } from 'rxjs';
+import { DestroyRef, inject, Injectable } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  BehaviorSubject,
+  EMPTY,
+  forkJoin,
+  map,
+  Observable,
+  of,
+  Subject,
+  tap,
+} from 'rxjs';
+import { BlocksApiService } from '../../../core/api/blocks-api.service';
+import type { DashboardDetailDto, DashboardSummaryDto } from '../../../core/api/dashboards-api.service';
 import {
   Block,
   BlockFieldSnapshot,
   BlockFocusRequest,
   BlockPresetId,
   BlockType,
+  BoardColumnId,
+  CardBlock,
   ChecklistBlock,
   ChecklistItem,
   isBlockType,
+  isBoardColumnId,
   isChecklistItemPriority,
   TextBlock,
 } from '../models/block';
+import { DashboardTypeApi } from '../models/dashboard-type.model';
 import { DashboardWorkspaceState } from '../models/dashboard-page.model';
 import { Panel } from '../models/panel.model';
 import {
@@ -19,36 +35,23 @@ import {
   createChecklistBlock,
   createChecklistItem,
   createDefaultEmptyBlocks,
-  resolvePanelTitleForPreset,
 } from './block-factory';
 
-function createDashboardPage(
-  title: string,
-  blocks: Block[],
-  tags: readonly string[] = [],
-): Panel {
+function createEmptyWorkspaceState(): DashboardWorkspaceState {
   return {
-    id: crypto.randomUUID(),
-    title,
-    blocks,
-    tags: [...tags],
-  };
-}
-
-function createInitialWorkspaceState(): DashboardWorkspaceState {
-  const empty = [...createDefaultEmptyBlocks()];
-  const page1 = createDashboardPage('Dashboard 1', empty);
-  const page2 = createDashboardPage('Dashboard 2', [...createDefaultEmptyBlocks()]);
-  return {
-    pages: [page1, page2],
-    activePageId: page1.id,
+    pages: [],
+    activePageId: '',
   };
 }
 
 @Injectable()
 export class DashboardService {
+  private readonly blocksApi = inject(BlocksApiService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly persistTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
   private readonly workspaceSubject = new BehaviorSubject<DashboardWorkspaceState>(
-    createInitialWorkspaceState(),
+    createEmptyWorkspaceState(),
   );
 
   readonly workspace$: Observable<DashboardWorkspaceState> =
@@ -71,20 +74,80 @@ export class DashboardService {
   private readonly blockTypeDrawerOpenSubject = new BehaviorSubject(false);
   readonly blockTypeDrawerOpen$ = this.blockTypeDrawerOpenSubject.asObservable();
 
-  loadBlocksFromApi(blocks: readonly unknown[]): void {
-    const normalized = blocks
+  setWorkspaceFromSummaries(rows: readonly DashboardSummaryDto[]): void {
+    const pages: Panel[] = rows.map((row) => ({
+      id: row.id,
+      title: row.title,
+      blocks: [],
+      tags: [],
+      dashboardType: row.type,
+    }));
+    const activePageId = pages.length > 0 ? pages[0].id : '';
+    this.workspaceSubject.next({ pages, activePageId });
+  }
+
+  applyDashboardDetail(detail: DashboardDetailDto): void {
+    const normalized = detail.blocks
       .map((raw) => this.normalizeBlockFromApi(raw))
-      .filter((b): b is Block => b !== null);
-    const forFirstPage =
-      normalized.length > 0 ? normalized : [...createDefaultEmptyBlocks()];
+      .filter((block): block is Block => block !== null);
+    const fallbackBlocks =
+      detail.type === DashboardTypeApi.Default && normalized.length === 0
+        ? [...createDefaultEmptyBlocks()]
+        : normalized;
     const s = this.getState();
-    if (s.pages.length === 0) {
-      return;
-    }
-    const pages = [...s.pages];
-    const first = pages[0];
-    pages[0] = { ...first, blocks: forFirstPage };
-    this.workspaceSubject.next({ ...s, pages });
+    const pages = s.pages.map((page) =>
+      page.id === detail.id
+        ? {
+            ...page,
+            title: detail.title,
+            dashboardType: detail.type,
+            blocks: fallbackBlocks,
+          }
+        : page,
+    );
+    const hasPage = pages.some((page) => page.id === detail.id);
+    const mergedPages = hasPage
+      ? pages
+      : [
+          ...pages,
+          {
+            id: detail.id,
+            title: detail.title,
+            blocks: fallbackBlocks,
+            tags: [],
+            dashboardType: detail.type,
+          },
+        ];
+    this.workspaceSubject.next({
+      ...s,
+      pages: mergedPages,
+      activePageId: detail.id,
+    });
+  }
+
+  addRemoteDashboard(row: DashboardSummaryDto): void {
+    const page: Panel = {
+      id: row.id,
+      title: row.title,
+      blocks: [],
+      tags: [],
+      dashboardType: row.type,
+    };
+    const s = this.getState();
+    this.workspaceSubject.next({
+      pages: [...s.pages, page],
+      activePageId: row.id,
+    });
+  }
+
+  getActivePageId(): string {
+    return this.getState().activePageId;
+  }
+
+  getActiveDashboardType(): DashboardTypeApi | null {
+    const state = this.getState();
+    const page = state.pages.find((panel) => panel.id === state.activePageId);
+    return page !== undefined ? page.dashboardType : null;
   }
 
   selectPage(pageId: string): void {
@@ -96,18 +159,6 @@ export class DashboardService {
       return;
     }
     this.workspaceSubject.next({ ...s, activePageId: pageId });
-  }
-
-  addPage(presetId: BlockPresetId = BlockPresetId.Empty): void {
-    const s = this.getState();
-    const nextNum = s.pages.length + 1;
-    const blocks = createBlocksForPreset(presetId);
-    const title = resolvePanelTitleForPreset(presetId, nextNum);
-    const newPage = createDashboardPage(title, blocks);
-    this.workspaceSubject.next({
-      pages: [...s.pages, newPage],
-      activePageId: newPage.id,
-    });
   }
 
   addTagToPanel(panelId: string, rawTag: string): void {
@@ -164,16 +215,154 @@ export class DashboardService {
     this.blockTypeDrawerOpenSubject.next(false);
   }
 
-  appendBlocksFromDrawerPreset(presetId: BlockPresetId): void {
+  appendBlocksFromDrawerPreset(presetId: BlockPresetId): Observable<Block[]> {
     this.closeBlockTypeDrawer();
+    const dashboardId = this.getActivePageId();
+    if (dashboardId === '') {
+      return EMPTY;
+    }
     const extra = createBlocksForPreset(presetId);
     if (extra.length === 0) {
+      return of([]);
+    }
+    const start = this.getActiveBlocks().length;
+    return forkJoin(
+      extra.map((block, index) =>
+        this.blocksApi.createBlock({
+          type: block.type,
+          content: this.serializeNewBlockForCreate(block),
+          position: start + index,
+          dashboardId,
+        }),
+      ),
+    ).pipe(
+      map((responses) =>
+        responses
+          .map((raw) => this.normalizeBlockFromApi(raw))
+          .filter((block): block is Block => block !== null),
+      ),
+      tap((normalized) => {
+        const current = this.getActiveBlocks();
+        this.setActivePageBlocks([...current, ...normalized]);
+        const lastBlock = normalized[normalized.length - 1];
+        if (lastBlock !== undefined) {
+          this.requestFocusAfterInsert(lastBlock);
+        }
+      }),
+    );
+  }
+
+  addBoardCard(): Observable<Block | null> {
+    const dashboardId = this.getActivePageId();
+    if (dashboardId === '') {
+      return of(null);
+    }
+    const position = this.getActiveBlocks().length;
+    return this.blocksApi
+      .createBlock({
+        type: BlockType.Card,
+        content: { text: '', column: BoardColumnId.Todo },
+        position,
+        dashboardId,
+      })
+      .pipe(
+        map((raw) => this.normalizeBlockFromApi(raw)),
+        tap((block) => {
+          if (block !== null) {
+            this.setActivePageBlocks([...this.getActiveBlocks(), block]);
+          }
+        }),
+      );
+  }
+
+  updateCardContent(blockId: string, text: string): void {
+    const blocks = this.getActiveBlocks();
+    const index = blocks.findIndex((block) => block.id === blockId);
+    if (index === -1) {
       return;
     }
-    const blocks = this.getActiveBlocks();
-    this.setActivePageBlocks([...blocks, ...extra]);
-    const last = extra[extra.length - 1];
-    this.requestFocusAfterInsert(last);
+    const current = blocks[index];
+    if (current.type !== BlockType.Card) {
+      return;
+    }
+    if (current.content === text) {
+      return;
+    }
+    const next = [...blocks];
+    next[index] = { ...current, content: text };
+    this.setActivePageBlocks(next);
+    this.scheduleBlockPersist(next[index] as CardBlock);
+  }
+
+  applyBoardLayout(blocks: Block[]): void {
+    this.setActivePageBlocks(blocks);
+    blocks.forEach((block, index) => {
+      if (block.type === BlockType.Card) {
+        this.blocksApi
+          .patchBlock(block.id, {
+            position: index,
+            content: { text: block.content, column: block.column },
+          })
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe();
+        return;
+      }
+      this.blocksApi
+        .patchBlock(block.id, { position: index })
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe();
+    });
+  }
+
+  private serializeNewBlockForCreate(block: Block): Record<string, unknown> {
+    if (block.type === BlockType.Text) {
+      const payload: Record<string, unknown> = { text: block.content };
+      if (block.title !== undefined) {
+        payload['title'] = block.title;
+      }
+      return payload;
+    }
+    if (block.type === BlockType.Checklist) {
+      return {
+        content: block.content,
+        items: block.items,
+        ...(block.title !== undefined ? { title: block.title } : {}),
+      };
+    }
+    return {
+      text: block.content,
+      column: block.column,
+    };
+  }
+
+  private scheduleBlockPersist(block: Block): void {
+    const previousTimer = this.persistTimers.get(block.id);
+    if (previousTimer !== undefined) {
+      clearTimeout(previousTimer);
+    }
+    const timer = setTimeout(() => {
+      this.persistTimers.delete(block.id);
+      let contentPayload: Record<string, unknown>;
+      if (block.type === BlockType.Text) {
+        contentPayload = { text: block.content };
+        if (block.title !== undefined) {
+          contentPayload['title'] = block.title;
+        }
+      } else if (block.type === BlockType.Checklist) {
+        contentPayload = {
+          content: block.content,
+          items: block.items,
+          ...(block.title !== undefined ? { title: block.title } : {}),
+        };
+      } else {
+        contentPayload = { text: block.content, column: block.column };
+      }
+      this.blocksApi
+        .patchBlock(block.id, { content: contentPayload })
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe();
+    }, 420);
+    this.persistTimers.set(block.id, timer);
   }
 
   private requestFocusAfterInsert(block: Block): void {
@@ -182,6 +371,30 @@ export class DashboardService {
       return;
     }
     this.requestFocus(block.id);
+  }
+
+  removeBlocksByIds(blockIds: readonly string[]): void {
+    if (blockIds.length === 0) {
+      return;
+    }
+    this.blocksApi
+      .deleteBlocks([...blockIds])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        const idSet = new Set(blockIds);
+        const blocks = this.getActiveBlocks();
+        const next = blocks.filter((block) => !idSet.has(block.id));
+        if (next.length === blocks.length) {
+          return;
+        }
+        this.setActivePageBlocks(next);
+        next.forEach((block, index) => {
+          this.blocksApi
+            .patchBlock(block.id, { position: index })
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe();
+        });
+      });
   }
 
   reorderBlocks(previousIndex: number, currentIndex: number): void {
@@ -201,6 +414,12 @@ export class DashboardService {
     const [moved] = next.splice(previousIndex, 1);
     next.splice(currentIndex, 0, moved);
     this.setActivePageBlocks(next);
+    next.forEach((block, index) => {
+      this.blocksApi
+        .patchBlock(block.id, { position: index })
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe();
+    });
   }
 
   updateBlockContent(blockId: string, content: string): void {
@@ -217,8 +436,10 @@ export class DashboardService {
       return;
     }
     const next = [...blocks];
-    next[index] = { ...previous, content };
+    const updated: TextBlock = { ...previous, content };
+    next[index] = updated;
     this.setActivePageBlocks(next);
+    this.scheduleBlockPersist(updated);
   }
 
   handleBlockKeydown(blockId: string, event: KeyboardEvent, snapshot: BlockFieldSnapshot): void {
@@ -364,8 +585,10 @@ export class DashboardService {
       return;
     }
     const next = [...blocks];
-    next[index] = patch(current);
+    const updated = patch(current);
+    next[index] = updated;
     this.setActivePageBlocks(next);
+    this.scheduleBlockPersist(updated);
   }
 
   private isSplitLineKey(event: KeyboardEvent): boolean {
@@ -437,6 +660,17 @@ export class DashboardService {
     const type = o['type'];
     if (id === '' || !isBlockType(type)) {
       return null;
+    }
+    if (type === BlockType.Card) {
+      const columnRaw = o['column'];
+      const column = isBoardColumnId(columnRaw) ? columnRaw : BoardColumnId.Todo;
+      const card: CardBlock = {
+        id,
+        type: BlockType.Card,
+        content: typeof o['content'] === 'string' ? o['content'] : '',
+        column,
+      };
+      return card;
     }
     if (type === BlockType.Text) {
       const titleRaw = o['title'];

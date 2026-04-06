@@ -10,10 +10,24 @@
     <div
       class="block-list__row"
       [class.block-list__row--search-hit]="rowMatchesHighlight(block)"
+      [class.block-list__row--selected]="selectMode() && isBlockSelected(block.id)"
       cdkDrag
       [cdkDragDisabled]="!reorderMode()"
     >
       <div class="block-list__row-inner">
+        @if (selectMode()) {
+          <div class="block-list__select-col">
+            <label class="block-list__select-label">
+              <input
+                type="checkbox"
+                class="block-list__select-checkbox"
+                [checked]="isBlockSelected(block.id)"
+                (change)="onSelectionCheckboxChange(block.id, $event)"
+                [attr.aria-label]="'Select block'"
+              />
+            </label>
+          </div>
+        }
         @if (reorderMode()) {
           <div class="block-list__handle-col">
             <button
@@ -59,6 +73,7 @@
                   (itemPriorityChange)="itemPriorityChange.emit($event)"
                 />
               }
+              @default {}
             }
           </div>
         </div>

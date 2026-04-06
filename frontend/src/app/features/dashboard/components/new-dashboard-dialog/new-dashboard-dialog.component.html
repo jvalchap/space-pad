@@ -1,0 +1,77 @@
+@if (open()) {
+  <div
+    class="new-dash-dialog__backdrop"
+    role="presentation"
+    (click)="onBackdropClick($event)"
+  >
+    <div
+      class="new-dash-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="new-dash-dialog-title"
+      (click)="$event.stopPropagation()"
+    >
+      <h2 id="new-dash-dialog-title" class="new-dash-dialog__title">New dashboard</h2>
+      <label class="new-dash-dialog__label">
+        <span class="new-dash-dialog__label-text">Title</span>
+        <input
+          class="new-dash-dialog__input"
+          type="text"
+          name="dashboardTitle"
+          [(ngModel)]="title"
+          autocomplete="off"
+        />
+      </label>
+
+      <div class="new-dash-dialog__options" role="group" aria-label="Dashboard type">
+        <button
+          type="button"
+          class="new-dash-dialog__option"
+          [class.new-dash-dialog__option--active]="pickedType === DashboardTypeApi.Default"
+          (click)="pickType(DashboardTypeApi.Default)"
+        >
+          <span class="new-dash-dialog__option-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+          </span>
+          <span class="new-dash-dialog__option-body">
+            <span class="new-dash-dialog__option-title">Blank page</span>
+            <span class="new-dash-dialog__option-desc">Start with empty blocks</span>
+          </span>
+        </button>
+
+        <button
+          type="button"
+          class="new-dash-dialog__option"
+          [class.new-dash-dialog__option--active]="pickedType === DashboardTypeApi.Board"
+          (click)="pickType(DashboardTypeApi.Board)"
+        >
+          <span class="new-dash-dialog__option-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="5" height="18" rx="1" />
+              <rect x="10" y="3" width="5" height="18" rx="1" />
+              <rect x="17" y="3" width="5" height="18" rx="1" />
+            </svg>
+          </span>
+          <span class="new-dash-dialog__option-body">
+            <span class="new-dash-dialog__option-title">Board</span>
+            <span class="new-dash-dialog__option-desc">Organize tasks in columns</span>
+          </span>
+        </button>
+      </div>
+
+      <div class="new-dash-dialog__actions">
+        <button type="button" class="new-dash-dialog__btn new-dash-dialog__btn--ghost" (click)="cancel()">
+          Cancel
+        </button>
+        <button type="button" class="new-dash-dialog__btn new-dash-dialog__btn--primary" (click)="submit()">
+          Create
+        </button>
+      </div>
+    </div>
+  </div>
+}

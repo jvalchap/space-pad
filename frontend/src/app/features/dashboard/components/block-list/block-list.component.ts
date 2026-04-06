@@ -28,7 +28,10 @@ export class BlockListComponent {
   readonly blocks = input.required<Block[]>();
   readonly highlightQuery = input('');
   readonly reorderMode = input(false, { transform: booleanAttribute });
+  readonly selectMode = input(false, { transform: booleanAttribute });
+  readonly selectedBlockIds = input<string[]>([]);
   readonly blocksReordered = output<BlocksReorderPayload>();
+  readonly blockSelectionToggle = output<string>();
   readonly contentChange = output<BlockContentChangePayload>();
   readonly fieldKeydown = output<TextLikeFieldKeydownPayload>();
   readonly toggleItem = output<ChecklistTogglePayload>();
@@ -63,10 +66,22 @@ export class BlockListComponent {
     });
   }
 
+  isBlockSelected(blockId: string): boolean {
+    return this.selectedBlockIds().includes(blockId);
+  }
+
+  onSelectionCheckboxChange(blockId: string, event: Event): void {
+    event.stopPropagation();
+    this.blockSelectionToggle.emit(blockId);
+  }
+
   rowMatchesHighlight(block: Block): boolean {
     const needle = this.highlightQuery().trim().toLowerCase();
     if (needle === '') {
       return false;
+    }
+    if (block.type === BlockType.Card) {
+      return block.content.toLowerCase().includes(needle);
     }
     if (block.type === BlockType.Text) {
       const blob = `${block.title ?? ''}\n${block.content}`.toLowerCase();

@@ -1,0 +1,66 @@
+<section class="dashboard-toolbar" aria-label="Dashboard blocks toolbar">
+  <div class="dashboard-toolbar__inner">
+    @if (mode() !== 'select') {
+      <div class="dashboard-toolbar__panel" role="group" aria-label="Block actions">
+        <div class="dashboard-toolbar__cluster dashboard-toolbar__cluster--main">
+          <app-toolbar-button [label]="addButtonLabel()" (click)="onAddBlock()">
+            <svg toolbarIcon lucidePlus [size]="16" [strokeWidth]="2" />
+          </app-toolbar-button>
+
+          @if (!boardMode()) {
+            <app-toolbar-button
+              label="Reorder"
+              [active]="mode() === 'reorder'"
+              [disabled]="mode() === 'reorder'"
+              [ariaPressed]="mode() === 'reorder' ? true : undefined"
+              (click)="onReorderClick()"
+            >
+              <svg toolbarIcon lucideGripVertical [size]="16" [strokeWidth]="2" />
+            </app-toolbar-button>
+
+            @if (mode() === 'reorder') {
+              <app-toolbar-button label="Done" [active]="true" (click)="onReorderDone()">
+                <svg toolbarIcon lucideCheck [size]="16" [strokeWidth]="2" />
+              </app-toolbar-button>
+            }
+
+            <app-toolbar-button
+              label="Select"
+              [disabled]="selectDisabled()"
+              (click)="onSelectClick()"
+            >
+              <svg toolbarIcon lucideCheckSquare [size]="16" [strokeWidth]="2" />
+            </app-toolbar-button>
+          }
+
+          <app-toolbar-button label="Share" (click)="onShare()">
+            <svg toolbarIcon lucideShare2 [size]="16" [strokeWidth]="2" />
+          </app-toolbar-button>
+        </div>
+      </div>
+    } @else {
+      <div class="dashboard-toolbar__panel" role="group" aria-label="Selection actions">
+        <div class="dashboard-toolbar__cluster dashboard-toolbar__cluster--select">
+          <p class="dashboard-toolbar__count" aria-live="polite">
+            {{ selectedSummaryLabel() }}
+          </p>
+          <div class="dashboard-toolbar__cluster dashboard-toolbar__cluster--actions">
+            <app-toolbar-button
+              label="Delete"
+              [disabled]="selectedCount() === 0"
+              (click)="onDeleteSelected()"
+            >
+              <svg toolbarIcon lucideTrash2 [size]="16" [strokeWidth]="2" />
+            </app-toolbar-button>
+            <app-toolbar-button label="Move" (click)="onMoveSelected()">
+              <svg toolbarIcon lucideFolderInput [size]="16" [strokeWidth]="2" />
+            </app-toolbar-button>
+            <app-toolbar-button label="Cancel" (click)="onCancelSelect()">
+              <svg toolbarIcon lucideX [size]="16" [strokeWidth]="2" />
+            </app-toolbar-button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</section>

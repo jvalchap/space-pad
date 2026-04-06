@@ -13,9 +13,7 @@ datasource db {
 
 enum DashboardType {
   DEFAULT
-  WORK
-  PERSONAL
-  STUDY
+  BOARD
 }
 
 model User {

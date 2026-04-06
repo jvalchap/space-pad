@@ -1,0 +1,83 @@
+:host {
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+  :host-context(.dashboard-toolbar__cluster--main) {
+    flex: 1 1 calc(50% - 0.25rem);
+    min-width: 0;
+    display: block;
+  }
+
+  :host-context(.dashboard-toolbar__cluster--actions) {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: block;
+  }
+
+  :host-context(.dashboard-toolbar__cluster--main) .toolbar-button,
+  :host-context(.dashboard-toolbar__cluster--actions) .toolbar-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.toolbar-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--sp-color-border);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-family: inherit;
+  line-height: 1.2;
+  color: var(--sp-color-text-primary);
+  background: color-mix(in srgb, var(--sp-color-surface) 72%, transparent);
+  cursor: pointer;
+  transition:
+    background var(--sp-transition-fast),
+    border-color var(--sp-transition-fast),
+    color var(--sp-transition-fast),
+    opacity var(--sp-transition-fast),
+    transform 0.18s ease;
+}
+
+.toolbar-button:hover:not(:disabled) {
+  background: var(--sp-accent-hover);
+  border-color: color-mix(in srgb, var(--sp-color-accent) 28%, transparent);
+}
+
+.toolbar-button:focus-visible {
+  outline: 2px solid var(--sp-focus-ring);
+  outline-offset: 2px;
+}
+
+.toolbar-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.toolbar-button--active {
+  border-color: color-mix(in srgb, var(--sp-color-accent) 40%, transparent);
+  background: color-mix(in srgb, var(--sp-color-accent) 14%, var(--sp-color-surface));
+}
+
+.toolbar-button__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: color-mix(in srgb, var(--sp-color-text-primary) 88%, transparent);
+}
+
+.toolbar-button__icon:empty {
+  display: none;
+}
+
+.toolbar-button__label {
+  white-space: nowrap;
+}

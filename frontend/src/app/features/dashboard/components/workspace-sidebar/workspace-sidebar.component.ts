@@ -16,14 +16,16 @@ export class WorkspaceSidebarComponent {
 
   /** Emitted after a navigation action so the parent can close the mobile drawer. */
   readonly mobileCloseRequest = output<void>();
+  readonly pageSelect = output<string>();
+  readonly newDashboard = output<void>();
 
   selectPageAndCloseMobile(pageId: string): void {
-    this.dashboard.selectPage(pageId);
+    this.pageSelect.emit(pageId);
     this.mobileCloseRequest.emit();
   }
 
-  addPageAndCloseMobile(): void {
-    this.dashboard.addPage();
+  openNewDashboardAndCloseMobile(): void {
+    this.newDashboard.emit();
     this.mobileCloseRequest.emit();
   }
 }

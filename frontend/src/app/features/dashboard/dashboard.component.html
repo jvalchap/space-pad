@@ -11,6 +11,8 @@
 
   <app-workspace-sidebar
     class="dashboard-shell__sidebar"
+    (pageSelect)="onSidebarPageSelect($event)"
+    (newDashboard)="openNewDashboardDialog()"
     (mobileCloseRequest)="closeMobileSidebar()"
   />
   <div class="dashboard-shell__main-container">
@@ -31,51 +33,84 @@
       </div>
     </header>
     <div class="dashboard-shell__main">
-      <section
-      class="dashboard-blocks-toolbar"
-      aria-label="Blocks organization"
-      >
-        <button
-          type="button"
-          class="dashboard-blocks-toolbar__btn"
-          [class.dashboard-blocks-toolbar__btn--active]="reorderMode()"
-          [attr.aria-pressed]="reorderMode()"
-          (click)="toggleReorderMode()"
-        >
-          {{ reorderMode() ? 'Done' : 'Reorder blocks' }}
-        </button>
-      </section>
+      @if (workspaceLoading()) {
+        <div class="dashboard-loading" aria-live="polite">Cargando…</div>
+      }
+
+      @if (workspaceError(); as errorMessage) {
+        <div class="dashboard-error" role="alert">
+          <span class="dashboard-error__text">{{ errorMessage }}</span>
+          <button type="button" class="dashboard-error__dismiss" (click)="dismissWorkspaceError()">
+            Cerrar
+          </button>
+        </div>
+      }
+
+      <app-dashboard-toolbar
+        [mode]="toolbarMode()"
+        [selectedCount]="selectedBlockIds().length"
+        [selectDisabled]="toolbarMode() === 'reorder'"
+        [boardMode]="isBoardDashboard()"
+        [addButtonLabel]="isBoardDashboard() ? 'Add card' : 'Add block'"
+        (addBlock)="onToolbarAddBlock()"
+        (reorderPressed)="onToolbarReorderStart()"
+        (reorderDone)="onToolbarReorderDone()"
+        (selectPressed)="onToolbarSelectToggle()"
+        (sharePressed)="onToolbarShare()"
+        (cancelSelect)="onToolbarCancelSelect()"
+        (deleteSelected)="onToolbarDeleteSelected()"
+        (moveSelected)="onToolbarMoveSelected()"
+      />
 
       <main class="dashboard-doc" aria-label="Dashboard content">
-        @if (blocks$ | async; as blocks) {
-          <!-- <app-panel-tags-bar /> -->
-
-          <app-block-list
-            [blocks]="blocks"
-            [highlightQuery]="(dashboard.globalSearchHighlight$ | async) ?? ''"
-            [reorderMode]="reorderMode()"
-            (blocksReordered)="onBlocksReordered($event)"
-            (contentChange)="onTextLikeContent($event)"
-            (fieldKeydown)="onTextLikeFieldKeydown($event)"
-            (toggleItem)="onChecklistToggle($event)"
-            (itemTextChange)="onChecklistItemText($event)"
-            (itemKeydown)="onChecklistItemKeydown($event)"
-            (itemPriorityChange)="onChecklistItemPriority($event)"
+        @if (isBoardDashboard()) {
+          <app-dashboard-board
+            [cards]="cardBlocks()"
+            (cardTextChange)="onCardTextChange($event)"
+            (layoutChange)="onBoardLayoutChange($event)"
           />
+        } @else {
+          @if (blocks$ | async; as blocks) {
+            <app-block-list
+              [blocks]="blocks"
+              [highlightQuery]="(dashboard.globalSearchHighlight$ | async) ?? ''"
+              [reorderMode]="reorderMode()"
+              [selectMode]="selectMode()"
+              [selectedBlockIds]="selectedBlockIds()"
+              (blocksReordered)="onBlocksReordered($event)"
+              (blockSelectionToggle)="toggleBlockSelection($event)"
+              (contentChange)="onTextLikeContent($event)"
+              (fieldKeydown)="onTextLikeFieldKeydown($event)"
+              (toggleItem)="onChecklistToggle($event)"
+              (itemTextChange)="onChecklistItemText($event)"
+              (itemKeydown)="onChecklistItemKeydown($event)"
+              (itemPriorityChange)="onChecklistItemPriority($event)"
+            />
+          }
         }
       </main>
     </div>
 
-    <footer class="dashboard-floating-bar" aria-label="Block creation">
-      <button type="button" class="dashboard-add-btn" (click)="dashboard.openBlockTypeDrawer()">
-        What will you create?
-      </button>
-    </footer>
+    @if (!isBoardDashboard()) {
+      <footer class="dashboard-floating-bar" aria-label="Block creation">
+        <button type="button" class="dashboard-add-btn" (click)="dashboard.openBlockTypeDrawer()">
+          What will you create?
+        </button>
+      </footer>
+    }
   </div>
 </div>
 
-<app-bottom-drawer
-  [open]="(dashboard.blockTypeDrawerOpen$ | async) ?? false"
-  (closeDrawer)="dashboard.closeBlockTypeDrawer()"
-  (blockPresetPicked)="dashboard.appendBlocksFromDrawerPreset($event)"
+<app-new-dashboard-dialog
+  [open]="newDashboardOpen()"
+  (closed)="closeNewDashboardDialog()"
+  (createDashboard)="onCreateDashboardFromDialog($event)"
 />
+
+@if (!isBoardDashboard()) {
+  <app-bottom-drawer
+    [open]="(dashboard.blockTypeDrawerOpen$ | async) ?? false"
+    (closeDrawer)="dashboard.closeBlockTypeDrawer()"
+    (blockPresetPicked)="onBlockPresetPicked($event)"
+  />
+}
