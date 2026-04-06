@@ -12,6 +12,7 @@ import type {
   AuthSuccessPayload,
   AuthUserPayload,
   JwtValidatedUser,
+  UsernameAvailabilityPayload,
 } from './auth.types';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -45,6 +46,17 @@ export class AuthService {
       }
       throw error;
     }
+  }
+
+  async getUsernameAvailability(
+    username: string,
+  ): Promise<UsernameAvailabilityPayload> {
+    const normalized = username.trim();
+    const existing = await this.prisma.user.findUnique({
+      where: { username: normalized },
+      select: { id: true },
+    });
+    return { available: existing === null };
   }
 
   async login(dto: LoginDto): Promise<AuthSuccessPayload> {

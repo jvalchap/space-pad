@@ -8,3 +8,7 @@ export interface AuthSuccessResponse {
   accessToken: string;
   user: AuthUser;
 }
+
+export interface UsernameAvailabilityResponse {
+  available: boolean;
+}

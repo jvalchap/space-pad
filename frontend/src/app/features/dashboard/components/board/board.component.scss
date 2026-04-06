@@ -1,0 +1,54 @@
+.board {
+  width: 100%;
+  padding: 0.25rem 0 1rem;
+  box-sizing: border-box;
+}
+
+.board__track {
+  display: flex;
+  gap: 0.85rem;
+  align-items: stretch;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.35rem;
+  scroll-snap-type: x proximity;
+  max-width: min(1200px, 100%);
+  margin: 0 auto;
+}
+
+.board__track > app-board-column {
+  scroll-snap-align: start;
+}
+
+.board__add-column {
+  flex: 0 0 272px;
+  width: 272px;
+  align-self: flex-start;
+  min-height: 120px;
+  margin: 0;
+  border: 2px dashed color-mix(in srgb, var(--sp-color-border) 85%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--dashboard-surface) 65%, transparent);
+  color: var(--sp-color-text-secondary);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease;
+}
+
+.board__add-column:hover {
+  border-color: color-mix(in srgb, var(--dashboard-accent) 45%, var(--sp-color-border));
+  background: color-mix(in srgb, var(--dashboard-accent) 8%, var(--dashboard-surface));
+  color: var(--sp-color-text-primary);
+}
+
+@media (max-width: 768px) {
+  .board__track {
+    max-width: none;
+  }
+}

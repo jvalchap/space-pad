@@ -1,0 +1,200 @@
+.board-card {
+  border-radius: 10px;
+  border: 1px solid var(--sp-color-border);
+  background: var(--sp-color-surface);
+  box-shadow: 0 1px 2px rgb(var(--dashboard-shadow-rgb) / 10%);
+  cursor: default;
+  transition:
+    box-shadow 0.18s ease,
+    transform 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.board-card:hover {
+  border-color: color-mix(in srgb, var(--sp-color-border) 70%, var(--dashboard-accent) 30%);
+  box-shadow: 0 3px 10px rgb(var(--dashboard-shadow-rgb) / 12%);
+}
+
+.board-card.cdk-drag-preview {
+  box-shadow: var(--sp-shadow-md);
+  transform: rotate(1.5deg);
+}
+
+.board-card.cdk-drag-animating {
+  transition: transform 200ms cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.board-card__top {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.35rem 0;
+}
+
+.board-card__drag-handle {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: color-mix(in srgb, var(--sp-color-text-primary) 45%, transparent);
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.board-card__drag-handle:hover {
+  background: color-mix(in srgb, var(--sp-color-border) 40%, transparent);
+  color: var(--sp-color-text-primary);
+}
+
+.board-card__drag-handle:active {
+  cursor: grabbing;
+}
+
+.board-card__labels {
+  display: flex;
+  gap: 0.2rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.board-card__label-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--sp-color-border) 80%, transparent);
+  padding: 0;
+  cursor: pointer;
+  opacity: 0.35;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.board-card__label-dot[data-color='sky'] {
+  background: #38bdf8;
+}
+.board-card__label-dot[data-color='mint'] {
+  background: #34d399;
+}
+.board-card__label-dot[data-color='peach'] {
+  background: #fb923c;
+}
+.board-card__label-dot[data-color='lilac'] {
+  background: #a78bfa;
+}
+
+.board-card__label-dot--on {
+  opacity: 1;
+  transform: scale(1.15);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--sp-color-surface) 85%, transparent);
+}
+
+.board-card__delete {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: color-mix(in srgb, var(--sp-color-text-primary) 40%, transparent);
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.board-card__delete:hover {
+  background: color-mix(in srgb, #ef4444 12%, transparent);
+  color: #ef4444;
+}
+
+.board-card__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0 0.55rem 0.35rem;
+}
+
+.board-card__chip {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  color: var(--sp-color-text-primary);
+}
+
+.board-card__chip[data-color='sky'] {
+  background: color-mix(in srgb, #38bdf8 28%, transparent);
+}
+.board-card__chip[data-color='mint'] {
+  background: color-mix(in srgb, #34d399 28%, transparent);
+}
+.board-card__chip[data-color='peach'] {
+  background: color-mix(in srgb, #fb923c 28%, transparent);
+}
+.board-card__chip[data-color='lilac'] {
+  background: color-mix(in srgb, #a78bfa 28%, transparent);
+}
+
+.board-card__body {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0.35rem 0.65rem 0.65rem;
+  border: none;
+  border-radius: 0 0 10px 10px;
+  text-align: left;
+  font: inherit;
+  line-height: 1.45;
+  color: var(--sp-color-text-primary);
+  background: transparent;
+  cursor: text;
+  box-sizing: border-box;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.board-card__body:hover {
+  background: color-mix(in srgb, var(--sp-color-border) 18%, transparent);
+}
+
+.board-card__body:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--dashboard-accent) 45%, transparent);
+  outline-offset: 0;
+}
+
+.board-card__placeholder {
+  color: var(--sp-color-text-secondary);
+  font-style: italic;
+}
+
+.board-card__editor {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0.35rem 0.65rem 0.65rem;
+  border: none;
+  border-radius: 0 0 10px 10px;
+  resize: vertical;
+  min-height: 4rem;
+  font: inherit;
+  line-height: 1.45;
+  color: var(--sp-color-text-primary);
+  background: color-mix(in srgb, var(--sp-color-border) 12%, transparent);
+  box-sizing: border-box;
+}
+
+.board-card__editor:focus {
+  outline: none;
+}
+
+.board-card__editor:focus-visible {
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--dashboard-accent) 35%, transparent);
+}

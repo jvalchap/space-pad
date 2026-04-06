@@ -14,3 +14,7 @@ export interface JwtValidatedUser {
   email: string;
   username: string;
 }
+
+export interface UsernameAvailabilityPayload {
+  available: boolean;
+}

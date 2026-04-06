@@ -1,0 +1,19 @@
+<div class="board" cdkDropListGroup>
+  <div class="board__track">
+    @for (column of columns(); track column.id) {
+      <app-board-column
+        [column]="column"
+        [cards]="cardsForColumn(column.id)"
+        [dropListId]="listId(column.id)"
+        (dropped)="onColumnDrop($event, column.id)"
+        (addCard)="onAddCard($event)"
+        (cardTextSave)="onCardTextSave($event)"
+        (cardDelete)="onCardDelete($event)"
+        (cardLabelsChange)="onCardLabels($event)"
+      />
+    }
+    <button type="button" class="board__add-column" (click)="addColumn()">
+      + Add column
+    </button>
+  </div>
+</div>

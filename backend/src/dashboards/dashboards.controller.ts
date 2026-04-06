@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
 import { CreateDashboardDto } from './dto/create-dashboard.dto';
 import { DashboardsService } from './dashboards.service';
 
@@ -16,5 +16,10 @@ export class DashboardsController {
   @Get(':userId')
   findForUser(@Param('userId', ParseUUIDPipe) userId: string) {
     return this.dashboardsService.findAllForUser(userId);
+  }
+
+  @Delete(':id')
+  delete(@Param('id', ParseUUIDPipe) id: string): Promise<{ deleted: boolean }> {
+    return this.dashboardsService.deleteDashboard(id);
   }
 }

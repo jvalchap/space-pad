@@ -7,6 +7,23 @@
             <svg toolbarIcon lucidePlus [size]="16" [strokeWidth]="2" />
           </app-toolbar-button>
 
+          @if (boardMode()) {
+            <app-toolbar-button
+              label="Filter"
+              [attr.title]="'Coming soon'"
+              (click)="onBoardFilterPlaceholder()"
+            >
+              <svg toolbarIcon lucideSearch [size]="16" [strokeWidth]="2" />
+            </app-toolbar-button>
+            <app-toolbar-button
+              label="Sort"
+              [attr.title]="'Coming soon'"
+              (click)="onBoardSortPlaceholder()"
+            >
+              <svg toolbarIcon lucideArrowDownWideNarrow [size]="16" [strokeWidth]="2" />
+            </app-toolbar-button>
+          }
+
           @if (!boardMode()) {
             <app-toolbar-button
               label="Reorder"

@@ -16,7 +16,7 @@ import { catchError, EMPTY, map, of, switchMap, take } from 'rxjs';
 import { DashboardsApiService } from '../../core/api/dashboards-api.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { BottomDrawerComponent } from './components/bottom-drawer/bottom-drawer.component';
-import { DashboardBoardComponent } from './components/dashboard-board/dashboard-board.component';
+import { BoardComponent } from './components/board/board.component';
 import { DashboardToolbarComponent } from './components/dashboard-toolbar/dashboard-toolbar.component';
 import { BlockListComponent } from './components/block-list/block-list.component';
 import { GlobalSearchBarComponent } from './components/global-search-bar/global-search-bar.component';
@@ -29,6 +29,7 @@ import { WorkspaceSidebarComponent } from './components/workspace-sidebar/worksp
 import {
   BlockContentChangePayload,
   BlocksReorderPayload,
+  BoardCardLabel,
   ChecklistItemKeydownPayload,
   ChecklistItemPriorityPayload,
   ChecklistItemTextPayload,
@@ -54,7 +55,7 @@ import { DashboardService } from './services/dashboard.service';
     GlobalSearchBarComponent,
     UserMenuComponent,
     BlockListComponent,
-    DashboardBoardComponent,
+    BoardComponent,
     DashboardToolbarComponent,
     NewDashboardDialogComponent,
     BottomDrawerComponent,
@@ -192,6 +193,33 @@ export class DashboardComponent {
   onSidebarPageSelect(pageId: string): void {
     this.dashboard.selectPage(pageId);
     this.refreshActiveDashboard();
+  }
+
+  onSidebarDashboardDelete(dashboardId: string): void {
+    const confirmDelete = window.confirm(
+      'Delete this dashboard? This will also delete its blocks.',
+    );
+    if (!confirmDelete) {
+      return;
+    }
+    const deletingActive = dashboardId === this.dashboard.getActivePageId();
+    this.workspaceError.set(null);
+    this.dashboardsApi
+      .deleteDashboard(dashboardId)
+      .pipe(
+        take(1),
+        catchError((error: unknown) => {
+          this.workspaceError.set(this.formatWorkspaceError(error));
+          return EMPTY;
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        this.dashboard.removeDashboard(dashboardId);
+        if (deletingActive) {
+          this.refreshActiveDashboard();
+        }
+      });
   }
 
   openNewDashboardDialog(): void {
@@ -374,6 +402,33 @@ export class DashboardComponent {
 
   onBoardLayoutChange(blocks: CardBlock[]): void {
     this.dashboard.applyBoardLayout(blocks);
+  }
+
+  onBoardCardAdd(payload: { columnId: string; content: string }): void {
+    if (this.dashboard.getActivePageId() === '') {
+      this.workspaceError.set('Crea o elige un dashboard en la barra lateral antes de añadir contenido.');
+      return;
+    }
+    this.workspaceError.set(null);
+    this.dashboard
+      .addBoardCard(payload.columnId, payload.content)
+      .pipe(
+        take(1),
+        catchError((error: unknown) => {
+          this.workspaceError.set(this.formatWorkspaceError(error));
+          return EMPTY;
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
+  }
+
+  onBoardCardDelete(blockId: string): void {
+    this.dashboard.removeBoardCard(blockId);
+  }
+
+  onBoardCardLabels(payload: { blockId: string; labels: BoardCardLabel[] }): void {
+    this.dashboard.updateCardLabels(payload.blockId, payload.labels);
   }
 
   onCardTextChange(payload: { blockId: string; text: string }): void {

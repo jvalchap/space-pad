@@ -41,6 +41,12 @@
   padding: 0;
 }
 
+.workspace-sidebar__row {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+}
+
 .workspace-sidebar__nav {
   flex: 1;
   overflow-y: auto;
@@ -53,7 +59,7 @@
   gap: 0.45rem;
   width: 100%;
   margin: 0 0 2px;
-  padding: 0.4rem 0.5rem;
+  padding: 0.4rem 2.15rem 0.4rem 0.5rem;
   border: none;
   border-radius: 6px;
   background: transparent;
@@ -62,6 +68,85 @@
   text-align: left;
   cursor: pointer;
   transition: background 120ms ease;
+}
+
+.workspace-sidebar__menu {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+}
+
+.workspace-sidebar__menu-trigger {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: color-mix(in srgb, var(--dashboard-fg) 70%, transparent);
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.workspace-sidebar__row:hover .workspace-sidebar__menu-trigger {
+  color: var(--dashboard-fg);
+}
+
+.workspace-sidebar__menu-trigger:hover {
+  background: color-mix(in srgb, var(--dashboard-fg) 8%, transparent);
+}
+
+.workspace-sidebar__menu-trigger:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--dashboard-accent) 45%, transparent);
+  outline-offset: 0;
+}
+
+.workspace-sidebar__menu-popover {
+  position: absolute;
+  right: 0;
+  top: 30px;
+  z-index: 10;
+  min-width: 140px;
+  padding: 0.25rem;
+  border-radius: 10px;
+  background: var(--sp-color-surface);
+  border: 1px solid var(--sp-color-border);
+  box-shadow: var(--sp-shadow-md);
+}
+
+.workspace-sidebar__menu-item {
+  width: 100%;
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--sp-color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.875rem;
+}
+
+.workspace-sidebar__menu-item:hover {
+  background: color-mix(in srgb, var(--dashboard-fg) 6%, transparent);
+}
+
+.workspace-sidebar__menu-item--danger {
+  color: #dc2626;
+}
+
+html.dark .workspace-sidebar__menu-item--danger {
+  color: #f87171;
+}
+
+.workspace-sidebar__menu-item--danger:hover {
+  background: color-mix(in srgb, #dc2626 10%, transparent);
 }
 
 .workspace-sidebar__item:hover {

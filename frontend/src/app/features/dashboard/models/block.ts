@@ -32,6 +32,50 @@ export function isBoardColumnId(value: unknown): value is BoardColumnId {
   );
 }
 
+/** Optional colored tag on board cards (stored in block JSON). */
+export interface BoardCardLabel {
+  readonly id: string;
+  readonly name: string;
+  readonly color: BoardCardLabelColor;
+}
+
+export enum BoardCardLabelColor {
+  Sky = 'sky',
+  Mint = 'mint',
+  Peach = 'peach',
+  Lilac = 'lilac',
+}
+
+export function isBoardCardLabelColor(value: unknown): value is BoardCardLabelColor {
+  return (
+    value === BoardCardLabelColor.Sky ||
+    value === BoardCardLabelColor.Mint ||
+    value === BoardCardLabelColor.Peach ||
+    value === BoardCardLabelColor.Lilac
+  );
+}
+
+export function normalizeBoardCardLabels(raw: unknown): BoardCardLabel[] {
+  if (!Array.isArray(raw)) {
+    return [];
+  }
+  const result: BoardCardLabel[] = [];
+  for (const entry of raw) {
+    if (entry === null || typeof entry !== 'object') {
+      continue;
+    }
+    const row = entry as Record<string, unknown>;
+    const id = typeof row['id'] === 'string' ? row['id'] : '';
+    const name = typeof row['name'] === 'string' ? row['name'] : '';
+    const colorRaw = row['color'];
+    if (id === '' || !isBoardCardLabelColor(colorRaw)) {
+      continue;
+    }
+    result.push({ id, name, color: colorRaw });
+  }
+  return result;
+}
+
 export enum ChecklistItemPriority {
   Low = 'low',
   Medium = 'medium',
@@ -74,7 +118,11 @@ export interface CardBlock {
   readonly id: string;
   readonly type: BlockType.Card;
   readonly content: string;
-  readonly column: BoardColumnId;
+  /** Column id (default lists use BoardColumnId values; custom columns use generated ids). */
+  readonly column: string;
+  /** Order within the column (1-based for display logic; persisted via layout sync). */
+  readonly position: number;
+  readonly labels?: readonly BoardCardLabel[];
 }
 
 export type Block = TextBlock | ChecklistBlock | CardBlock;

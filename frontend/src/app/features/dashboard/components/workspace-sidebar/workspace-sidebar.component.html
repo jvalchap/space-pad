@@ -14,23 +14,51 @@
       <ul class="workspace-sidebar__list">
         @for (page of ws.pages; track page.id) {
           <li>
-            <button
-              type="button"
-              class="workspace-sidebar__item"
-              [class.workspace-sidebar__item--active]="page.id === ws.activePageId"
-              (click)="selectPageAndCloseMobile(page.id)"
-            >
-              <span class="workspace-sidebar__item-body">
-                <span class="workspace-sidebar__item-title">{{ page.title }}</span>
-                @if (page.tags.length > 0) {
-                  <span class="workspace-sidebar__tags" aria-label="Labels">
-                    @for (tag of page.tags; track tag) {
-                      <span class="workspace-sidebar__tag">{{ tag }}</span>
-                    }
-                  </span>
+            <div class="workspace-sidebar__row">
+              <button
+                type="button"
+                class="workspace-sidebar__item"
+                [class.workspace-sidebar__item--active]="page.id === ws.activePageId"
+                (click)="selectPageAndCloseMobile(page.id)"
+              >
+                <span class="workspace-sidebar__item-body">
+                  <span class="workspace-sidebar__item-title">{{ page.title }}</span>
+                  @if (page.tags.length > 0) {
+                    <span class="workspace-sidebar__tags" aria-label="Labels">
+                      @for (tag of page.tags; track tag) {
+                        <span class="workspace-sidebar__tag">{{ tag }}</span>
+                      }
+                    </span>
+                  }
+                </span>
+              </button>
+
+              <div class="workspace-sidebar__menu">
+                <button
+                  type="button"
+                  class="workspace-sidebar__menu-trigger"
+                  (click)="toggleMenu(page.id, $event)"
+                  aria-label="Dashboard actions"
+                  [attr.aria-expanded]="openMenuForDashboardId() === page.id"
+                >
+                  <svg lucideMoreVertical [size]="18" [strokeWidth]="2" aria-hidden="true"></svg>
+                </button>
+
+                @if (openMenuForDashboardId() === page.id) {
+                  <div class="workspace-sidebar__menu-popover" role="menu">
+                    <button
+                      type="button"
+                      class="workspace-sidebar__menu-item workspace-sidebar__menu-item--danger"
+                      role="menuitem"
+                      (click)="requestDelete(page.id, $event)"
+                    >
+                      <svg lucideTrash2 [size]="16" [strokeWidth]="2" aria-hidden="true"></svg>
+                      <span>Delete</span>
+                    </button>
+                  </div>
                 }
-              </span>
-            </button>
+              </div>
+            </div>
           </li>
         }
       </ul>

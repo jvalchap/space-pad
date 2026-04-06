@@ -1,10 +1,12 @@
 import { booleanAttribute, Component, input, output } from '@angular/core';
 import {
+  LucideArrowDownWideNarrow,
   LucideCheck,
   LucideCheckSquare,
   LucideFolderInput,
   LucideGripVertical,
   LucidePlus,
+  LucideSearch,
   LucideShare2,
   LucideTrash2,
   LucideX,
@@ -25,6 +27,8 @@ import { ToolbarButtonComponent } from '../toolbar-button/toolbar-button.compone
     LucideTrash2,
     LucideFolderInput,
     LucideX,
+    LucideSearch,
+    LucideArrowDownWideNarrow,
   ],
   templateUrl: './dashboard-toolbar.component.html',
   styleUrl: './dashboard-toolbar.component.scss',
@@ -82,6 +86,10 @@ export class DashboardToolbarComponent {
   onMoveSelected(): void {
     this.moveSelected.emit();
   }
+
+  onBoardFilterPlaceholder(): void {}
+
+  onBoardSortPlaceholder(): void {}
 
   selectedSummaryLabel(): string {
     const count = this.selectedCount();

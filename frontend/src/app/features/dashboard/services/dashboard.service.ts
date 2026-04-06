@@ -18,13 +18,14 @@ import {
   BlockFocusRequest,
   BlockPresetId,
   BlockType,
+  BoardCardLabel,
   BoardColumnId,
   CardBlock,
   ChecklistBlock,
   ChecklistItem,
   isBlockType,
-  isBoardColumnId,
   isChecklistItemPriority,
+  normalizeBoardCardLabels,
   TextBlock,
 } from '../models/block';
 import { DashboardTypeApi } from '../models/dashboard-type.model';
@@ -161,6 +162,19 @@ export class DashboardService {
     this.workspaceSubject.next({ ...s, activePageId: pageId });
   }
 
+  removeDashboard(dashboardId: string): void {
+    const s = this.getState();
+    const nextPages = s.pages.filter((p) => p.id !== dashboardId);
+    if (nextPages.length === s.pages.length) {
+      return;
+    }
+    const nextActive =
+      s.activePageId === dashboardId
+        ? (nextPages[0]?.id ?? '')
+        : s.activePageId;
+    this.workspaceSubject.next({ pages: nextPages, activePageId: nextActive });
+  }
+
   addTagToPanel(panelId: string, rawTag: string): void {
     const trimmed = rawTag.trim();
     if (trimmed === '') {
@@ -252,16 +266,21 @@ export class DashboardService {
     );
   }
 
-  addBoardCard(): Observable<Block | null> {
+  addBoardCard(
+    columnId: string = BoardColumnId.Todo,
+    text: string = '',
+  ): Observable<Block | null> {
     const dashboardId = this.getActivePageId();
     if (dashboardId === '') {
       return of(null);
     }
     const position = this.getActiveBlocks().length;
+    const column =
+      typeof columnId === 'string' && columnId.length > 0 ? columnId : BoardColumnId.Todo;
     return this.blocksApi
       .createBlock({
         type: BlockType.Card,
-        content: { text: '', column: BoardColumnId.Todo },
+        content: { text, column },
         position,
         dashboardId,
       })
@@ -273,6 +292,10 @@ export class DashboardService {
           }
         }),
       );
+  }
+
+  removeBoardCard(blockId: string): void {
+    this.removeBlocksByIds([blockId]);
   }
 
   updateCardContent(blockId: string, text: string): void {
@@ -294,14 +317,57 @@ export class DashboardService {
     this.scheduleBlockPersist(next[index] as CardBlock);
   }
 
-  applyBoardLayout(blocks: Block[]): void {
-    this.setActivePageBlocks(blocks);
-    blocks.forEach((block, index) => {
+  updateCardLabels(blockId: string, labels: readonly BoardCardLabel[]): void {
+    const blocks = this.getActiveBlocks();
+    const index = blocks.findIndex((block) => block.id === blockId);
+    if (index === -1) {
+      return;
+    }
+    const current = blocks[index];
+    if (current.type !== BlockType.Card) {
+      return;
+    }
+    const nextLabels = [...labels];
+    const sameLength = (current.labels?.length ?? 0) === nextLabels.length;
+    const sameEntries =
+      sameLength &&
+      nextLabels.every((label, i) => {
+        const previous = current.labels?.[i];
+        return (
+          previous !== undefined &&
+          previous.id === label.id &&
+          previous.name === label.name &&
+          previous.color === label.color
+        );
+      });
+    if (sameEntries) {
+      return;
+    }
+    const next = [...blocks];
+    const updated: CardBlock = { ...current, labels: nextLabels };
+    next[index] = updated;
+    this.setActivePageBlocks(next);
+    this.scheduleBlockPersist(updated);
+  }
+
+  applyBoardLayout(cardBlocks: CardBlock[]): void {
+    const current = this.getActiveBlocks();
+    const nonCards = current.filter((block) => block.type !== BlockType.Card);
+    const merged = [...nonCards, ...cardBlocks];
+    this.setActivePageBlocks(merged);
+    merged.forEach((block, index) => {
       if (block.type === BlockType.Card) {
+        const contentPayload: Record<string, unknown> = {
+          text: block.content,
+          column: block.column,
+        };
+        if (block.labels !== undefined) {
+          contentPayload['labels'] = [...block.labels];
+        }
         this.blocksApi
           .patchBlock(block.id, {
             position: index,
-            content: { text: block.content, column: block.column },
+            content: contentPayload,
           })
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe();
@@ -329,10 +395,14 @@ export class DashboardService {
         ...(block.title !== undefined ? { title: block.title } : {}),
       };
     }
-    return {
+    const payload: Record<string, unknown> = {
       text: block.content,
       column: block.column,
     };
+    if (block.labels !== undefined) {
+      payload['labels'] = [...block.labels];
+    }
+    return payload;
   }
 
   private scheduleBlockPersist(block: Block): void {
@@ -356,6 +426,9 @@ export class DashboardService {
         };
       } else {
         contentPayload = { text: block.content, column: block.column };
+        if (block.labels !== undefined) {
+          contentPayload['labels'] = [...block.labels];
+        }
       }
       this.blocksApi
         .patchBlock(block.id, { content: contentPayload })
@@ -663,12 +736,23 @@ export class DashboardService {
     }
     if (type === BlockType.Card) {
       const columnRaw = o['column'];
-      const column = isBoardColumnId(columnRaw) ? columnRaw : BoardColumnId.Todo;
+      const column =
+        typeof columnRaw === 'string' && columnRaw.length > 0
+          ? columnRaw
+          : BoardColumnId.Todo;
+      const positionRaw = o['position'];
+      const position =
+        typeof positionRaw === 'number' && Number.isFinite(positionRaw)
+          ? positionRaw
+          : 0;
+      const labels = normalizeBoardCardLabels(o['labels']);
       const card: CardBlock = {
         id,
         type: BlockType.Card,
         content: typeof o['content'] === 'string' ? o['content'] : '',
         column,
+        position,
+        ...(labels.length > 0 ? { labels } : {}),
       };
       return card;
     }

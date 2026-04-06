@@ -1,0 +1,52 @@
+<section class="board-column" [attr.aria-label]="column().title">
+  <header class="board-column__header">
+    <h2 class="board-column__title">
+      {{ column().title }}
+      <span class="board-column__count">({{ cards().length }})</span>
+    </h2>
+  </header>
+
+  <div
+    class="board-column__drop"
+    cdkDropList
+    [id]="dropListId()"
+    [cdkDropListData]="cards()"
+    (cdkDropListDropped)="dropped.emit($event)"
+  >
+    @if (cards().length === 0) {
+      <p class="board-column__empty">No cards yet</p>
+    }
+    @for (card of cards(); track card.id) {
+      <app-board-card
+        [card]="card"
+        [columnTitle]="column().title"
+        (textSave)="cardTextSave.emit($event)"
+        (deleteCard)="cardDelete.emit($event)"
+        (labelsChange)="cardLabelsChange.emit($event)"
+      />
+    }
+  </div>
+
+  <div class="board-column__footer">
+    @if (composerOpen) {
+      <textarea
+        #composerField
+        class="board-column__composer"
+        rows="3"
+        [(ngModel)]="draftContent"
+        (keydown)="onComposerKeydown($event)"
+        (blur)="onComposerBlur()"
+        placeholder="Write a title…"
+        [attr.aria-label]="'New card in ' + column().title"
+      ></textarea>
+    } @else {
+      <button
+        type="button"
+        class="board-column__add-btn"
+        (click)="toggleComposer()"
+      >
+        + Add card
+      </button>
+    }
+  </div>
+</section>

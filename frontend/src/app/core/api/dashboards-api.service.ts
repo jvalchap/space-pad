@@ -22,6 +22,10 @@ export interface DashboardDetailDto extends DashboardSummaryDto {
   readonly blocks: unknown[];
 }
 
+export interface DeleteDashboardResponse {
+  deleted: boolean;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -39,5 +43,9 @@ export class DashboardsApiService {
 
   createDashboard(body: CreateDashboardRequest): Observable<DashboardSummaryDto> {
     return this.http.post<DashboardSummaryDto>(`${this.apiBaseUrl}/dashboards`, body);
+  }
+
+  deleteDashboard(id: string): Observable<DeleteDashboardResponse> {
+    return this.http.delete<DeleteDashboardResponse>(`${this.apiBaseUrl}/dashboards/${id}`);
   }
 }

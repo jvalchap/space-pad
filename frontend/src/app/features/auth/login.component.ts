@@ -2,30 +2,90 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { finalize } from 'rxjs';
+import { LucideCheck, LucideEye, LucideEyeOff } from '@lucide/angular';
+import { finalize, take } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { ThemeToggleComponent } from '../dashboard/components/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, ThemeToggleComponent],
+  imports: [
+    FormsModule,
+    ThemeToggleComponent,
+    LucideCheck,
+    LucideEye,
+    LucideEyeOff,
+  ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
 export class LoginComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private usernameCheckRequestId = 0;
   readonly isRegisterMode = signal(false);
   readonly isSubmitting = signal(false);
   readonly errorMessage = signal('');
+  readonly passwordVisible = signal(false);
+  readonly usernameCheckState = signal<
+    'idle' | 'checking' | 'available' | 'taken' | 'error'
+  >('idle');
   email = '';
   username = '';
   password = '';
 
+  onUsernameInput(): void {
+    if (!this.isRegisterMode()) {
+      return;
+    }
+    this.usernameCheckRequestId += 1;
+    this.usernameCheckState.set('idle');
+  }
+
+  onUsernameBlur(): void {
+    if (!this.isRegisterMode()) {
+      return;
+    }
+    const trimmed = this.username.trim();
+    if (trimmed.length < 2) {
+      this.usernameCheckState.set('idle');
+      return;
+    }
+    this.usernameCheckRequestId += 1;
+    const requestId = this.usernameCheckRequestId;
+    this.usernameCheckState.set('checking');
+    this.authService
+      .getUsernameAvailability(trimmed)
+      .pipe(take(1))
+      .subscribe({
+        next: (response) => {
+          if (requestId !== this.usernameCheckRequestId) {
+            return;
+          }
+          this.usernameCheckState.set(
+            response.available ? 'available' : 'taken',
+          );
+        },
+        error: () => {
+          if (requestId !== this.usernameCheckRequestId) {
+            return;
+          }
+          this.usernameCheckState.set('error');
+        },
+      });
+  }
+
+  togglePasswordVisible(): void {
+    this.passwordVisible.update((visible) => !visible);
+  }
+
   toggleMode(): void {
     this.isRegisterMode.update((value) => !value);
     this.errorMessage.set('');
+    this.passwordVisible.set(false);
+    this.usernameCheckRequestId += 1;
+    this.usernameCheckState.set('idle');
   }
 
   submit(): void {
@@ -49,6 +109,12 @@ export class LoginComponent {
       }
       if (passwordValue.length < 8) {
         this.errorMessage.set('Password must be at least 8 characters.');
+        return;
+      }
+      if (this.usernameCheckState() === 'taken') {
+        this.errorMessage.set(
+          'That username is already taken. Choose another.',
+        );
         return;
       }
     } else {

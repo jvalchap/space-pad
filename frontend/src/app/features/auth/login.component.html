@@ -23,30 +23,79 @@
 			@if (isRegisterMode()) {
 				<label class="login-page__field">
 					<span class="login-page__label">Username</span>
-					<input
-						class="login-page__input"
-						type="text"
-						name="username"
-						[(ngModel)]="username"
-						required
-						minlength="2"
-						maxlength="32"
-						autocomplete="username"
-					/>
+					<div class="login-page__input-affix">
+						<input
+							class="login-page__input"
+							[class.login-page__input--with-affix-checking]="
+								usernameCheckState() === 'checking'
+							"
+							[class.login-page__input--with-affix-ok]="
+								usernameCheckState() === 'available'
+							"
+							type="text"
+							name="username"
+							[(ngModel)]="username"
+							required
+							minlength="2"
+							maxlength="32"
+							autocomplete="username"
+							(input)="onUsernameInput()"
+							(blur)="onUsernameBlur()"
+						/>
+						@if (usernameCheckState() === 'checking') {
+							<span class="login-page__username-checking" aria-hidden="true"
+								>Checking…</span
+							>
+						}
+						@if (usernameCheckState() === 'available') {
+							<span
+								class="login-page__username-ok"
+								role="status"
+								aria-label="Username is available"
+							>
+								<svg lucideCheck [size]="20" [strokeWidth]="2" aria-hidden="true"></svg>
+							</span>
+						}
+					</div>
+					@if (usernameCheckState() === 'taken') {
+						<p class="login-page__field-feedback login-page__field-feedback--error">
+							This username is already taken.
+						</p>
+					}
+					@if (usernameCheckState() === 'error') {
+						<p class="login-page__field-feedback login-page__field-feedback--error">
+							Could not verify this username. Try again.
+						</p>
+					}
 				</label>
 			}
 
 			<label class="login-page__field">
 				<span class="login-page__label">Password</span>
-				<input
-					class="login-page__input"
-					type="password"
-					name="password"
-					[(ngModel)]="password"
-					required
-					[attr.minlength]="isRegisterMode() ? 8 : null"
-					[attr.autocomplete]="isRegisterMode() ? 'new-password' : 'current-password'"
-				/>
+				<div class="login-page__password-wrap">
+					<input
+						class="login-page__input login-page__input--with-toggle"
+						[type]="passwordVisible() ? 'text' : 'password'"
+						name="password"
+						[(ngModel)]="password"
+						required
+						[attr.minlength]="isRegisterMode() ? 8 : null"
+						[attr.autocomplete]="isRegisterMode() ? 'new-password' : 'current-password'"
+					/>
+					<button
+						type="button"
+						class="login-page__password-toggle"
+						(click)="togglePasswordVisible()"
+						[attr.aria-label]="passwordVisible() ? 'Hide password' : 'Show password'"
+						[attr.aria-pressed]="passwordVisible()"
+					>
+						@if (passwordVisible()) {
+							<svg lucideEyeOff [size]="20" [strokeWidth]="2" aria-hidden="true"></svg>
+						} @else {
+							<svg lucideEye [size]="20" [strokeWidth]="2" aria-hidden="true"></svg>
+						}
+					</button>
+				</div>
 			</label>
 
 			@if (errorMessage().length > 0) {

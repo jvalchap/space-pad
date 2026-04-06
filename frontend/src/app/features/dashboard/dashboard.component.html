@@ -13,6 +13,7 @@
     class="dashboard-shell__sidebar"
     (pageSelect)="onSidebarPageSelect($event)"
     (newDashboard)="openNewDashboardDialog()"
+    (dashboardDelete)="onSidebarDashboardDelete($event)"
     (mobileCloseRequest)="closeMobileSidebar()"
   />
   <div class="dashboard-shell__main-container">
@@ -51,7 +52,7 @@
         [selectedCount]="selectedBlockIds().length"
         [selectDisabled]="toolbarMode() === 'reorder'"
         [boardMode]="isBoardDashboard()"
-        [addButtonLabel]="isBoardDashboard() ? 'Add card' : 'Add block'"
+        [addButtonLabel]="isBoardDashboard() ? '+ Add card' : 'Add block'"
         (addBlock)="onToolbarAddBlock()"
         (reorderPressed)="onToolbarReorderStart()"
         (reorderDone)="onToolbarReorderDone()"
@@ -64,10 +65,14 @@
 
       <main class="dashboard-doc" aria-label="Dashboard content">
         @if (isBoardDashboard()) {
-          <app-dashboard-board
+          <app-board
             [cards]="cardBlocks()"
-            (cardTextChange)="onCardTextChange($event)"
+            [dashboardId]="dashboard.getActivePageId()"
             (layoutChange)="onBoardLayoutChange($event)"
+            (cardTextChange)="onCardTextChange($event)"
+            (cardAdd)="onBoardCardAdd($event)"
+            (cardDelete)="onBoardCardDelete($event)"
+            (cardLabelsChange)="onBoardCardLabels($event)"
           />
         } @else {
           @if (blocks$ | async; as blocks) {

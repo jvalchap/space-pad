@@ -4,7 +4,11 @@ import { inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { API_BASE_URL } from '../api/api-base-url.token';
-import type { AuthSuccessResponse, AuthUser } from './auth.models';
+import type {
+  AuthSuccessResponse,
+  AuthUser,
+  UsernameAvailabilityResponse,
+} from './auth.models';
 import { AUTH_TOKEN_STORAGE_KEY, AUTH_USER_STORAGE_KEY } from './auth-storage-key.constant';
 
 @Injectable({
@@ -50,6 +54,15 @@ export class AuthService {
         password,
       })
       .pipe(tap((response) => this.persistSession(response)));
+  }
+
+  getUsernameAvailability(
+    username: string,
+  ): Observable<UsernameAvailabilityResponse> {
+    return this.http.get<UsernameAvailabilityResponse>(
+      `${this.apiBaseUrl}/auth/username-availability`,
+      { params: { username } },
+    );
   }
 
   logout(): void {

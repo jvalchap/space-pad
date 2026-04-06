@@ -75,4 +75,12 @@ export class DashboardsService {
       },
     });
   }
+
+  async deleteDashboard(id: string): Promise<{ deleted: boolean }> {
+    await this.prisma.$transaction([
+      this.prisma.block.deleteMany({ where: { dashboardId: id } }),
+      this.prisma.dashboard.delete({ where: { id } }),
+    ]);
+    return { deleted: true };
+  }
 }

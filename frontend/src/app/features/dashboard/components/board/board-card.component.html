@@ -1,0 +1,67 @@
+<article class="board-card" cdkDrag>
+  <div class="board-card__top">
+    <button
+      type="button"
+      class="board-card__drag-handle"
+      cdkDragHandle
+      aria-label="Drag card"
+      (click)="$event.stopPropagation()"
+    >
+      <svg lucideGripVertical [size]="16" [strokeWidth]="2" aria-hidden="true"></svg>
+    </button>
+    <div class="board-card__labels" aria-label="Tags">
+      @for (preset of PRESET_LABELS; track preset.id) {
+        <button
+          type="button"
+          class="board-card__label-dot"
+          [class.board-card__label-dot--on]="isPresetActive(preset.id)"
+          [attr.data-color]="preset.color"
+          [attr.aria-pressed]="isPresetActive(preset.id)"
+          [attr.aria-label]="preset.name"
+          [title]="preset.name"
+          (click)="togglePreset(preset, $event)"
+        ></button>
+      }
+    </div>
+    <button
+      type="button"
+      class="board-card__delete"
+      aria-label="Delete card"
+      (click)="onDeleteClick($event)"
+    >
+      <svg lucideTrash2 [size]="16" [strokeWidth]="2" aria-hidden="true"></svg>
+    </button>
+  </div>
+  @if ((card().labels?.length ?? 0) > 0) {
+    <div class="board-card__chips">
+      @for (label of card().labels; track label.id) {
+        <span class="board-card__chip" [attr.data-color]="label.color">{{ label.name }}</span>
+      }
+    </div>
+  }
+  @if (editingText) {
+    <textarea
+      #editArea
+      class="board-card__editor"
+      rows="3"
+      [(ngModel)]="draftText"
+      (blur)="commitEdit()"
+      (keydown)="onEditKeydown($event)"
+      [attr.data-block-id]="card().id"
+      [attr.aria-label]="'Card in ' + columnTitle()"
+    ></textarea>
+  } @else {
+    <button
+      type="button"
+      class="board-card__body"
+      (click)="startEdit()"
+      [attr.aria-label]="'Edit card in ' + columnTitle()"
+    >
+      @if (card().content.trim().length > 0) {
+        {{ card().content }}
+      } @else {
+        <span class="board-card__placeholder">Empty card — click to edit</span>
+      }
+    </button>
+  }
+</article>

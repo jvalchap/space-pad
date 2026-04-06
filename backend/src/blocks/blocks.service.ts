@@ -33,13 +33,15 @@ export class BlocksService {
     }
     if (type === 'card') {
       const col = content['column'];
-      const column =
-        col === 'doing' || col === 'done' || col === 'todo' ? col : 'todo';
+      const column = typeof col === 'string' && col.length > 0 ? col : 'todo';
+      const labelsRaw = content['labels'];
+      const labels = Array.isArray(labelsRaw) ? labelsRaw : undefined;
       return {
         id: row.id,
         type: 'card',
         content: String(content['text'] ?? content['content'] ?? ''),
         column,
+        ...(labels !== undefined ? { labels } : {}),
       };
     }
     return {
